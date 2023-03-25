@@ -55,7 +55,7 @@
    $restriccionEdad="";
  
    //Conexion a base de datos
-   include("../config/bd.php");
+   include("bd.php");
 
    //Switch de opciones para pagina web
    switch($accion){
