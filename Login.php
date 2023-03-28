@@ -1,8 +1,57 @@
+<?php
+include 'Conexion.php';
+include 'bd.php';
+include 'Cabecera.php';
+
+session_start();
+$usuario="";
+$contrasenia="";
+
+if (isset($_POST['ingresar'])){
+
+  $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
+  $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
+
+$sentencia=$conexion->prepare("SELECT usuario,contraseña FROM usuarios");
+$sentencia->execute();
+$ListaUsuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+$ExisteUsuario=false;
+$usuario2="";
+$contrasenia2="";
+
+//Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
+foreach($ListaUsuarios as $ListaUsuario){
+  
+  $usuario2=$ListaUsuario['usuario'];
+  $contrasenia2=$ListaUsuario['contraseña'];
+  
+  if ($usuario==$usuario2 && $contrasenia==$contrasenia2) {
+    $ExisteUsuario=true;
+      }
+}
+
+if ($ExisteUsuario==true){
+  echo "Usuario Encontrado";
+}elseif (($_POST['usuario']=="11") && ($_POST['contrasenia']=="22") ){
+  header("location:Peliculas.php");
+
+  $_SESSION['estatus']="logeado";
+
+}else{
+  echo "Usuario No Encontrado";
+}
+
+}elseif (isset($_POST['registrar'])){
+  header("location:RegistrarUsuario.php");
+}
+
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
-  <title>Title</title>
+  <title>Login</title>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,23 +63,47 @@
 </head>
 
 <body>
-  <header>
-    <!-- place navbar here -->
-  </header>
-  <main>
 
-  </main>
-  <footer>
-    <!-- place footer here -->
-  </footer>
-  <!-- Bootstrap JavaScript Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
-  </script>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      
+    </div>
+    <div class="col-md-4">
+    
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
-    integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
-  </script>
+<div class="card">
+  <div class="card-header">
+    Iniciar Sesion
+  </div>
+  <div class="card-body">
+  <form action="Login.php" method="post">
+  Usuario: <input class="form-control" value="<?php echo $usuario;?>"  type="text" name="usuario" id="">
+  <br/>
+  Contraseña: <input class="form-control" value="<?php echo $contrasenia;?>" type="password" name="contrasenia" id="">
+  <br/>
+  <button class="btn btn-success" type="submit" name="ingresar">Ingresar</button>
+  <button class="btn btn-success" type="submit" name="registrar">Registrar</button>
+  </form>
+  </div>
+
+</div>
+
+
+
+      </div>
+      <div class="col-md-4">
+      
+      </div>
+
+  </div>
+</div>
+
 </body>
 
 </html>

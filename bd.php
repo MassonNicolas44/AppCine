@@ -1,11 +1,11 @@
 <?php 
     $host="localhost";
     $db="gamesofmovies";
-    $usuario="root";
-    $contraseña="";
+    $BDusuario="root";
+    $BDcontraseña="";
 
     try {
-        $conexion=new PDO("mysql:host=$host;dbname=$db",$usuario,$contraseña); 
+        $conexion=new PDO("mysql:host=$host;dbname=$db",$BDusuario,$BDcontraseña); 
     }catch (Exception $ex) {
         echo $ex-> getMessage();
     }
