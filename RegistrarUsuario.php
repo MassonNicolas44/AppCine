@@ -2,23 +2,20 @@
 
 //PHP para realizar la carga de nuevo usuario a la base de datos
     include 'Conexion.php';
-    include 'bd.php';
     include 'Cabecera.php';
     
-    $nombre="";
-    $usuario="";
-    $telefono="";
-    $email="";
-    $contrasenia="";
+    $nombre=(isset($_POST['nombre']))?$_POST['nombre']:"";
+    $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
+    $telefono=(isset($_POST['telefono']))?$_POST['telefono']:"";
+    $email=(isset($_POST['email']))?$_POST['email']:"";
+    $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
 
     if (isset($_POST['registrar'])){
-
-      $nombre=(isset($_POST['nombre']))?$_POST['nombre']:"";
-      $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
-      $telefono=(isset($_POST['telefono']))?$_POST['telefono']:"";
-      $email=(isset($_POST['email']))?$_POST['email']:"";
-      $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
-
+        if (isset($_POST["nombre"]) && !empty($_POST["nombre"]) && 
+            isset($_POST["usuario"]) && !empty($_POST["usuario"]) &&
+            isset($_POST["telefono"]) && !empty($_POST["telefono"]) && 
+            isset($_POST["email"]) && !empty($_POST["email"]) &&
+            isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])){
 
     $sentencia=$conexion->prepare("SELECT * FROM usuarios");
 $sentencia->execute();
@@ -50,39 +47,23 @@ if ($ExisteUsuario==true){
   echo "Ya existe un Usuario con este email";
 }elseif ($ExisteUsuario==false && $ExisteEmail==false){
   echo "Registro exitoso";
+  
+  //Sentencia para insertar un nuevo usuario a la base de datos desde Android
+  $sentencia="INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña)
+  VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia')";
+  $accion = $conexion->query($sentencia);
+  header("location:Login.php");
 }
-      //header("location:Login.php")}
+
+}else{
+  echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
+ }
+
     }elseif (isset($_POST['cancelar'])){
         header("location:Login.php");
       }
 
-    
-/*
-    $usuario2;
-
-    $sentencia=$mysql->prepare("SELECT usuario FROM usuarios WHERE usuario=?");
-    $sentencia->bind_param('s',$usuario);
-    $sentencia->execute();
-    $sentencia->store_result();
-    $sentencia->bind_result($usuario2);
-    $response=array();
-
-    while($sentencia->fetch()){
-        $response["usuario"]=$usuario2;
-    }
-
-    if($usuario!=$usuario2){
-        //Sentencia para insertar un nuevo usuario a la base de datos desde Android
-        $query="INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña)
-        VALUES ('$nombre','$usuario','$telefono','$email','$contraseña')";
-        $result = $mysql->query($query);
-        $response["success"]=true;
-    }else{
-        $response["success"]=false;
-    }
-
-    echo json_encode($response);
-    */
+  
 ?>	
 
 <!doctype html>
@@ -116,15 +97,15 @@ if ($ExisteUsuario==true){
   </div>
   <div class="card-body">
   <form action="RegistrarUsuario.php" method="post">
-  Nombre: <input class="form-control" value ="<?php  echo $nombre ?>" type="text" name="nombre" id="">
+  Nombre: <input class="form-control" value ="<?php  echo $nombre ?>"  type="text" name="nombre" id="">
   <br/>
-  Usuario: <input class="form-control" value ="<?php  echo $usuario ?>" type="text" name="usuario" id="">
+  Usuario: <input class="form-control" value ="<?php  echo $usuario ?>"  type="text" name="usuario" id="">
   <br/>
-  Telefono: <input class="form-control" value ="<?php  echo $telefono ?>" type="text" name="telefono" id="">
+  Telefono: <input class="form-control" value ="<?php  echo $telefono ?>"  type="number" name="telefono" id="">
   <br/>
-  Email: <input class="form-control" value ="<?php  echo $email ?>" type="text" name="email" id="">
+  Email: <input class="form-control" value ="<?php  echo $email ?>"  type="text" name="email" id="">
   <br/>
-  Contraseña: <input class="form-control" value ="<?php  echo $contrasenia ?>" type="password" name="contrasenia" id="">
+  Contraseña: <input class="form-control" value ="<?php  echo $contrasenia ?>"  type="password" name="contrasenia" id="">
   <br/>
   <button class="btn btn-success" type="submit" name="registrar">Registrar</button>
   <button class="btn btn-success" type="submit" name="cancelar">Cancelar</button>

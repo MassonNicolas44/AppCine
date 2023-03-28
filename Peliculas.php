@@ -1,7 +1,7 @@
     <!-- Pagina -->
 <?php 
 include ("cabecera.php");
-include("bd.php");
+include("Conexion.php");
 
 //Declaracion de variables para luego ser utilizadas en distintos procesos
    $txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";

@@ -1,16 +1,13 @@
 <?php
 include 'Conexion.php';
-include 'bd.php';
 include 'Cabecera.php';
 
 session_start();
-$usuario="";
-$contrasenia="";
+$usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
+$contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
 
 if (isset($_POST['ingresar'])){
-
-  $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
-  $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
+  if(isset($_POST["usuario"]) && !empty($_POST["usuario"]) && isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])){
 
 $sentencia=$conexion->prepare("SELECT usuario,contraseña FROM usuarios");
 $sentencia->execute();
@@ -41,6 +38,9 @@ if ($ExisteUsuario==true){
 }else{
   echo "Usuario No Encontrado";
 }
+ }else{
+  echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
+ }
 
 }elseif (isset($_POST['registrar'])){
   header("location:RegistrarUsuario.php");
