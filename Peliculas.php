@@ -25,6 +25,8 @@ include("Conexion.php");
    $validarPelicula=false;
    $txtTitulo2="";
    $validarModificar="Inicio";
+   $Habilitacion="Si";
+   $anularHabilitacion="No";
    $restriccionEdad="";
  
    //Conexion a base de datos
@@ -55,7 +57,7 @@ include("Conexion.php");
                     }else{
                         //Sentencia para cargar la pelicula en la tabla "proximasPeliculas"
                         $sentenciaSQL = $conexion->prepare("INSERT INTO proximaspeliculas(titulo, duracion, restriccionEdad, 
-                        categoria, tipo, imgResource,fechaEstreno) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:imgResource,:fechaEstreno);");
+                        categoria, tipo, imgResource,fechaEstreno,habilitadaProximaPelicula) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:imgResource,:fechaEstreno,:habilitadaProximaPelicula);");
                         $sentenciaSQL->bindParam(':titulo',$txtTitulo);
                         $sentenciaSQL->bindParam(':duracion',$txtDuracion);
                         $sentenciaSQL->bindParam(':restriccion',$txtrestriccionEdad);
@@ -72,6 +74,7 @@ include("Conexion.php");
                         }
                         $sentenciaSQL->bindParam(':imgResource',$nombreArchivo);
                         $sentenciaSQL->bindParam(':fechaEstreno',$txtFecha);
+                        $sentenciaSQL->bindParam(':habilitadaProximaPelicula',$Habilitacion);
                         $sentenciaSQL->execute();
                         
                         header("Location:Peliculas.php");
@@ -101,7 +104,7 @@ include("Conexion.php");
                         echo "<script> alert('Pelicula existe'); </script>";
                     }else{
                         //Sentencia para cargar la pelicula en la tabla "Peliculas"
-                        $sentenciaSQL = $conexion->prepare("INSERT INTO peliculas(titulo, duracion, restriccionEdad, categoria, tipo, precio,descripcion, imgResource) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:precio,:descripcion,:imgResource);");
+                        $sentenciaSQL = $conexion->prepare("INSERT INTO peliculas(titulo, duracion, restriccionEdad, categoria, tipo, precio,descripcion, imgResource,habilitacion) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:precio,:descripcion,:imgResource,:habilitacion);");
                         $sentenciaSQL->bindParam(':titulo',$txtTitulo);
                         $sentenciaSQL->bindParam(':duracion',$txtDuracion);
                         $sentenciaSQL->bindParam(':restriccion',$txtrestriccionEdad);
@@ -119,6 +122,7 @@ include("Conexion.php");
                             $nombreArchivo = "NoImagen.jpeg";
                         }
                         $sentenciaSQL->bindParam(':imgResource',$nombreArchivo);
+                        $sentenciaSQL->bindParam(':habilitacion',$Habilitacion);
                         $sentenciaSQL->execute();
                         
                         header("Location:Peliculas.php");
@@ -329,22 +333,19 @@ include("Conexion.php");
         break;
 
         case "Borrar":
-
             if ($accion="Seleccionar"){
-            //Sentencia para eliminar una pelicula de la base de datos (tabla "peliculas") desde la web
-            $sentenciaSQL = $conexion->prepare("DELETE from peliculas WHERE IdPelicula=:IdPelicula");
-            $sentenciaSQL->bindParam(':IdPelicula',$txtID);
-            $sentenciaSQL->execute();
-            $peliculas=$sentenciaSQL->fetch(PDO::FETCH_LAZY);
 
+                $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET habilitada=:habilitada WHERE IdPelicula=:IdPelicula");
+                $sentenciaSQL->bindParam(':IdPelicula',$txtID);
+                $sentenciaSQL->bindParam(':habilitada',$anularHabilitacion);
+                $sentenciaSQL->execute();
             }
             if ($accion="Seleccionar ProximaPelicula"){
             //Sentencia para eliminar una pelicula de la base de datos (tabla "proximaspeliculas") desde la web
-            $sentenciaSQL = $conexion->prepare("DELETE from proximaspeliculas WHERE IdPelicula=:IdPelicula");
+            $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET habilitadaProximaPelicula=:habilitadaProximaPelicula WHERE IdPelicula=:IdPelicula");
             $sentenciaSQL->bindParam(':IdPelicula',$txtID);
+            $sentenciaSQL->bindParam(':habilitadaProximaPelicula',$anularHabilitacion);
             $sentenciaSQL->execute();
-            $peliculas=$sentenciaSQL->fetch(PDO::FETCH_LAZY);
-
             }
             header("Location:Peliculas.php");
             break;
@@ -562,7 +563,8 @@ include("Conexion.php");
         <tbody>
             <?php 
             //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-            foreach($listaPeliculas as $pelicula){    
+            foreach($listaPeliculas as $pelicula){
+                if ($pelicula['habilitada']=="Si"){    
                 ?>
             <tr>
                 <td><?php echo $pelicula['IdPelicula']?> </td>
@@ -584,7 +586,7 @@ include("Conexion.php");
                     </form>
                 </td>
             </tr>
-          <?php }         
+          <?php }}         
           ?>
         </tbody>
         </table>
@@ -608,7 +610,8 @@ include("Conexion.php");
         <tbody>
             <?php 
             //Sentencia para recorrer la tabla "ProximasPeliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-            foreach($listaPeliculas2 as $pelicula2){?>
+            foreach($listaPeliculas2 as $pelicula2){
+                if ($pelicula2['habilitadaProximaPelicula']=="Si"){  ?>
         <tr>
             <td><?php echo $pelicula2['IdPelicula']?> </td>
             <td><?php echo $pelicula2['titulo']?> </td>
@@ -628,7 +631,7 @@ include("Conexion.php");
                 </form>
             </td>
         </tr>
-      <?php }         
+      <?php }   }      
           ?>
         </tbody>
     </table>
