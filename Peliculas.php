@@ -362,9 +362,7 @@ include("Conexion.php");
     $sentenciaSQL2->execute();
     $listaPeliculas2=$sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
 
-  
-    //Codigo B4 para diseño de la pagina web
-?>
+  ?>
 
 <script>
     function confirmacion(){
@@ -611,7 +609,7 @@ include("Conexion.php");
             <?php 
             //Sentencia para recorrer la tabla "ProximasPeliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
             foreach($listaPeliculas2 as $pelicula2){
-                if ($pelicula2['habilitadaProximaPelicula']=="Si"){  ?>
+                if ($pelicula2['habilitada']=="Si"){  ?>
         <tr>
             <td><?php echo $pelicula2['IdPelicula']?> </td>
             <td><?php echo $pelicula2['titulo']?> </td>

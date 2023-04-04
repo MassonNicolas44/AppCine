@@ -1,47 +1,144 @@
 <?php
-require "Conexion.php";
-require "fpdf/fpdf.php";
+include "Conexion.php";
+include "Cabecera.php";
 
-//Sentencia para seleccionar informes de peliculas
-$sql="SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio FROM peliculas";
-$resultado=$mysql->query($sql);
+$txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";
+$txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
 
-//Generar archivo PDF con el resultado del informe
-$pdf=new FPDF("P","mm","letter");
-$pdf->SetMargins(10,10,10);
-$pdf->AddPage();
-$pdf->SetFont("Arial","B",16);
-$pdf->Cell(25);
-$pdf->Cell(135,5,"Informe de Peliculas",0,0,"C");
-$pdf->SetFont("Arial","",12);
+    //Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "peliculas") desde la web
+    $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas");
+    $sentenciaSQL->execute();
+    $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
-$pdf->Cell(25,5,"Fecha: ".date("Y/m/d"),0,1,"C");
-$pdf->Ln(10);
-$pdf->SetFont("Arial","B",12);
-$pdf->Cell(12,10,"Id",1,0,"C");
-$pdf->Cell(63,10,"Titulo",1,0,"C");
-$pdf->Cell(27,10,"Duracion",1,0,"C");
-$pdf->Cell(25,10,"Categoria",1,0,"C");
-$pdf->Multicell(30, 5, "Restriccion Edad", 1, "C");
-$x = $pdf->GetX();
-$y = $pdf->GetY();
-$pdf->SetXY($x+157, $y-10);
-$pdf->Cell(14,10,"Tipo",1,0,"C");
-$pdf->Cell(18,10,"Precio",1,1,"C");
-$pdf->SetFont("Arial","",12);
+    if (isset($_POST['SeleccionarFecha'])){
+            $txtFechaInicio=$_POST['txtFechaInicio'];
+            $txtFechaFin=$_POST['txtFechaFin'];
+    }elseif (isset($_POST['ImprimirInforme'])){
+            header("Location:ImprimirInformePelicula.php");
+    }elseif (isset($_POST['CancelarFecha'])){
+        $txtFechaInicio="";
+        $txtFechaFin="";
+    }else{
 
-//Codigo para recorrer la lista desde la Base de Datos y mostrarlo en las columnas/filas indicadas
-while($fila=$resultado->fetch_assoc()){
-    $pdf->Cell(12,6,$fila['IdPelicula'],1,0,"C");
-    $pdf->Cell(63,6,utf8_decode($fila['titulo']),1,0,"C");
-    $pdf->Cell(27,6,$fila['duracion']." Min",1,0,"C");
-    $pdf->Cell(25,6,utf8_decode($fila['categoria']),1,0,"C");
-    $pdf->Cell(30,6,$fila['restriccionEdad'],1,0,"C");
-    $pdf->Cell(14,6,$fila['tipo'],1,0,"C");
-    $pdf->Cell(18,6,$fila['precio']."$",1,1,"C");
-}
+    }
 
-$pdf->Output();
 ?>
+
+<div class="container">
+    <br/>
+    <div class="card">
+        <div class="card-header"><em>Informe de Peliculas</em></div>
+            <div class="card-body">
+            <form action="InformePeliculas.php" method="post"> 
+                <div class="row">
+
+                <?php
+                        if (!empty($txtFechaInicio) && !empty($txtFechaFin)){
+                            ?>
+                                <div class="col-md-10">
+                                <p align="left">
+                                <strong>
+
+                                    <?php
+                                    echo "Fecha Inicio Informe: ".$txtFechaInicio." ----- Fecha Fin Informe: ".$txtFechaFin;
+                                    ?>
+                                    </strong>
+                                    </p>
+                                </div>
+                            <?php
+                        }else{
+                            ?>
+                                <div class="col-md-10">
+                                <p align="left">
+                                <strong>
+                                <?php
+                                    echo "Informe Sin Filtro de Fecha";
+                                ?>
+                                </strong>
+                                </p>
+                                </div>
+                            <?php
+                        }
+                ?>
+
+                    <div class = "col-md-3">
+                        <label> <ins> Fecha Inicio:</ins></label>
+                        <input type="date"  class="form-control" value="<?php echo $txtFechaInicio?>" name="txtFechaInicio">
+                    </div>
+                    <div class = "col-md-3">
+                        <label><ins> Fecha Fin:</ins></label>
+                        <input type="date"  class="form-control" value="<?php echo $txtFechaFin?>" name="txtFechaFin">
+                    </div>                
+                    <form action="InformePeliculas.php" method="post">    
+                    <div class = "col">
+                        <button type="submit" name="SeleccionarFecha"  class="btn btn-success">Seleccionar Fecha</button>
+                    </div>
+                    <div class = "col">
+                        <button type="submit" name="ImprimirInforme"  class="btn btn-info">Imprimir Informe</button>
+                    </div>
+                    <div class = "col">
+                        <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br/>
+
+
+
+<div class="container">
+<div class="card">
+    <div class="card-header"><em>Peliculas</em></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Titulo</th>
+                    <th>Duracion [Min]</th>
+                    <th>Restriccion Edad</th>
+                    <th>Categoria</th>
+                    <th>Tipo</th>
+                    <th>Precio [$]</th>
+                    <th>Descripcion</th>
+                    <th>Imagen</th>
+                    <th>Habilitada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
+                foreach($listaPeliculas as $pelicula){
+                    if ($pelicula['habilitada']=="Si"){    
+                ?>
+                <tr>
+                    <td><?php echo $pelicula['IdPelicula']?> </td>
+                    <td><?php echo $pelicula['titulo']?> </td>
+                    <td><?php echo $pelicula['duracion']?> </td>
+                    <td><?php echo $pelicula['restriccionEdad']?> </td>
+                    <td><?php echo $pelicula['categoria']?> </td>
+                    <td><?php echo $pelicula['tipo']?></td>
+                    <td><?php echo $pelicula['precio']?></td>
+                    <td><?php echo $pelicula['descripcion']?></td>
+                <td>
+                <img src="../../../GamesOfMovies/img/<?php echo $pelicula['imgResource']?>" width="75" alt="">
+                </td>
+                    <td><?php echo $pelicula['habilitada']?></td>
+                </tr>
+                <?php }}         
+                    ?>
+                </tbody>
+                </table>
+            </tbody>
+        </div>
+    </div>
+    <br/>
+</div>
+
+<?php
 
 
