@@ -17,8 +17,12 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
     if (isset($_POST['SeleccionarFecha'])){
             $txtFechaInicio=$_POST['txtFechaInicio'];
             $txtFechaFin=$_POST['txtFechaFin'];
-    }elseif (isset($_POST['ImprimirInforme'])){
+    }elseif (isset($_POST['ImprimirInformeVentas'])){
             header("Location:ImprimirInformeVentas.php");
+    }elseif (isset($_POST['ImprimirInformeRecaudacion'])){
+        header("Location:ImprimirInformeRecaudacion.php");
+    }elseif (isset($_POST['ImprimirInformeBoletos'])){
+    header("Location:ImprimirInformeBoletos.php");
     }elseif (isset($_POST['CancelarFecha'])){
         $txtFechaInicio="";
         $txtFechaFin="";
@@ -64,7 +68,7 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
                             <?php
                         }
                 ?>
-
+ 
                     <div class = "col-md-3">
                         <label> <ins> Fecha Inicio:</ins></label>
                         <input type="date"  class="form-control" value="<?php echo $txtFechaInicio?>" name="txtFechaInicio">
@@ -72,16 +76,23 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
                     <div class = "col-md-3">
                         <label><ins> Fecha Fin:</ins></label>
                         <input type="date"  class="form-control" value="<?php echo $txtFechaFin?>" name="txtFechaFin">
-                    </div>                
+                        <br/>
+                    </div>    
+                </div>  
+                
+                <div class = "row">      
                     <form action="InformeVentas.php" method="post">    
                     <div class = "col">
                         <button type="submit" name="SeleccionarFecha"  class="btn btn-success">Seleccionar Fecha</button>
-                    </div>
-                    <div class = "col">
-                        <button type="submit" name="ImprimirInforme"  class="btn btn-info">Imprimir Informe</button>
-                    </div>
-                    <div class = "col">
                         <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar</button>
+                    </div>
+                </div>
+                <br/>
+                <div class = "row">    
+                    <div class = "col">   
+                        <button type="submit" name="ImprimirInformeVentas"  class="btn btn-info">Informe Ventas</button>
+                        <button type="submit" name="ImprimirInformeRecaudacion"  class="btn btn-info">Informe Recaudacion</button>
+                        <button type="submit" name="ImprimirInformeBoletos"  class="btn btn-info">Informe Boletos</button>
                     </div>
                 </div>
                 </form>

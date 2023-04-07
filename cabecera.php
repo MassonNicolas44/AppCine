@@ -30,10 +30,7 @@ if ( $_SESSION['estatus']!="logeado"){
         <a class="nav-item nav-link" href="<?php echo $url;?>/Peliculas.php"> Peliculas |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformeUsuarios.php"> Informe de Usuarios |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformePeliculas.php"> Informe de Peliculas |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/InformeProximasPeliculas.php"> Informe de Proximas Peliculas |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformeVentas.php"> Informe de Ventas Peliculas |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/InformeRankingPeliculasRecaudado.php"> Informe de Ranking de las Peliculas con mas Recaudacion |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/InformeRankingPeliculasBoleto.php"> Informe de Ranking de las Peliculas con mas Boletos Vendidos</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/Login.php"> |֎| Cerrar Sesion </a>
           </div>
     </nav>

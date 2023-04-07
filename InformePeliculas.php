@@ -2,83 +2,60 @@
 include "Conexion.php";
 include "Cabecera.php";
 
-$txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";
-$txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
 
-    //Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "peliculas") desde la web
+$rdgTipo=(isset($_POST['Tipo']))?$_POST['Tipo']:"Peliculas";
+
+
+if ($rdgTipo=="Peliculas"){
     $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas");
     $sentenciaSQL->execute();
     $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+}elseif ($rdgTipo=="ProximasPeliculas"){
+    $sentenciaSQL = $conexion->prepare("SELECT * FROM proximaspeliculas");
+    $sentenciaSQL->execute();
+    $listaPeliculas2=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
     if (isset($_POST['SeleccionarFecha'])){
             $txtFechaInicio=$_POST['txtFechaInicio'];
             $txtFechaFin=$_POST['txtFechaFin'];
     }elseif (isset($_POST['ImprimirInforme'])){
-            header("Location:ImprimirInformePelicula.php");
-    }elseif (isset($_POST['CancelarFecha'])){
-        $txtFechaInicio="";
-        $txtFechaFin="";
+            if ($rdgTipo=="Peliculas"){
+                header("Location:ImprimirInformePelicula.php");
+            }elseif ($rdgTipo=="ProximasPeliculas"){
+                header("Location:ImprimirInformeProximasPelicula.php");
+            }
     }else{
 
     }
 
 ?>
 
+<br/>
+
 <div class="container">
-    <br/>
     <div class="card">
+        <?php
+        if($rdgTipo=="Peliculas"){ ?>
         <div class="card-header"><em>Informe de Peliculas</em></div>
+        <?php }elseif($rdgTipo=="ProximasPeliculas"){ ?>
+            <div class="card-header"><em>Informe de Proximas Peliculas</em></div>
+            <?php }; ?>
             <div class="card-body">
-            <form action="InformePeliculas.php" method="post"> 
-                <div class="row">
-
-                <?php
-                        if (!empty($txtFechaInicio) && !empty($txtFechaFin)){
-                            ?>
-                                <div class="col-md-10">
-                                <p align="left">
-                                <strong>
-
-                                    <?php
-                                    echo "Fecha Inicio Informe: ".$txtFechaInicio." ----- Fecha Fin Informe: ".$txtFechaFin;
-                                    ?>
-                                    </strong>
-                                    </p>
-                                </div>
-                            <?php
-                        }else{
-                            ?>
-                                <div class="col-md-10">
-                                <p align="left">
-                                <strong>
-                                <?php
-                                    echo "Informe Sin Filtro de Fecha";
-                                ?>
-                                </strong>
-                                </p>
-                                </div>
-                            <?php
-                        }
-                ?>
-
-                    <div class = "col-md-3">
-                        <label> <ins> Fecha Inicio:</ins></label>
-                        <input type="date"  class="form-control" value="<?php echo $txtFechaInicio?>" name="txtFechaInicio">
-                    </div>
-                    <div class = "col-md-3">
-                        <label><ins> Fecha Fin:</ins></label>
-                        <input type="date"  class="form-control" value="<?php echo $txtFechaFin?>" name="txtFechaFin">
-                    </div>                
-                    <form action="InformePeliculas.php" method="post">    
-                    <div class = "col">
-                        <button type="submit" name="SeleccionarFecha"  class="btn btn-success">Seleccionar Fecha</button>
-                    </div>
-                    <div class = "col">
-                        <button type="submit" name="ImprimirInforme"  class="btn btn-info">Imprimir Informe</button>
-                    </div>
-                    <div class = "col">
-                        <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar</button>
-                    </div>
+            <form action="InformePeliculas.php" method="post">
+                 
+                        <div class="row">
+                            Peliculas <input type="radio" <?php echo ($rdgTipo=="Peliculas")?"checked":"";?> name="Tipo" value="Peliculas">
+                        </div>       
+                        <div class="row">             
+                            Proximas Peliculas <input type="radio" <?php echo ($rdgTipo=="ProximasPeliculas")?"checked":"";?> name="Tipo" value="ProximasPeliculas">
+                        </div>
+                        <br/>
+                        <div class = "col">
+                            <button type="submit" name="SeleccionarInforme" class="btn btn-info">Seleccionar Tipo Informe</button>
+                            <button type="submit" name="ImprimirInforme"  class="btn btn-info">Imprimir Informe</button>
+                        </div>
                 </div>
                 </form>
             </div>
@@ -92,6 +69,10 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
 
 <div class="container">
 <div class="card">
+
+<?php
+if($rdgTipo=="Peliculas"){
+?>
     <div class="card-header"><em>Peliculas</em></div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -136,6 +117,52 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
             </tbody>
         </div>
     </div>
+    <?php
+}elseif($rdgTipo=="ProximasPeliculas"){
+?>
+<div class="card-header"><em>Proximas Peliculas</em></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Titulo</th>
+                    <th>Duracion [Min]</th>
+                    <th>Restriccion Edad</th>
+                    <th>Categoria</th>
+                    <th>Tipo</th>
+                    <th>Imagen</th>
+                    <th>Fecha Estreno</th>
+                    <th>Habilitada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
+                foreach($listaPeliculas2 as $pelicula2){
+                    if ($pelicula2['habilitada']=="Si"){    
+                ?>
+                <tr>
+                    <td><?php echo $pelicula2['IdPelicula']?> </td>
+                    <td><?php echo $pelicula2['titulo']?> </td>
+                    <td><?php echo $pelicula2['duracion']?> </td>
+                    <td><?php echo $pelicula2['restriccionEdad']?> </td>
+                    <td><?php echo $pelicula2['categoria']?> </td>
+                    <td><?php echo $pelicula2['tipo']?></td>
+                <td>
+                <img src="../../../GamesOfMovies/img/<?php echo $pelicula2['imgResource']?>" width="75" alt="">
+                </td>
+                <td><?php echo $pelicula2['fechaEstreno']?></td>
+                    <td><?php echo $pelicula2['habilitada']?></td>
+                </tr>
+                <?php }}         
+                    ?>
+                </tbody>
+                </table>
+            </tbody>
+        </div>
+    </div>
+    <?php  }?>
     <br/>
 </div>
 
