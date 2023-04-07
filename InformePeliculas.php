@@ -1,6 +1,6 @@
 <?php
 include "Conexion.php";
-include "Cabecera.php";
+include "CabeceraAdministrador.php";
 
 
 $IdPelicula=(isset($_POST['idPelicula']))?$_POST['idPelicula']:"";

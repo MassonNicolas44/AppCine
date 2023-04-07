@@ -1,15 +1,11 @@
 <?php
 
-/* session_start();
+ session_start();
 
-if ( $_SESSION['estatus']!="logeado"){
-  echo "logeado";
-//header("location:Login.php");
-}else{
-  $_SESSION['estatus']="no logeado";
-  echo "No logeado";
+if ($_SESSION['estatus']!="admin"){
+  header("location:Login.php");
 }
-*/
+
 ?>
 
 <!doctype html>
@@ -31,6 +27,6 @@ if ( $_SESSION['estatus']!="logeado"){
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformeUsuarios.php"> Administrar Usuarios |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformePeliculas.php"> Informe de Peliculas |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/InformeVentas.php"> Informe Adicional de Peliculas |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/Login.php">Cerrar Sesion |֎|</a>
-          </div>
+            <a class="nav-item nav-link" href="<?php echo $url;?>/CerrarSession.php">Cerrar Sesion |֎|</a>
+        </div>
     </nav>

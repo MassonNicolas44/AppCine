@@ -1,6 +1,6 @@
     <!-- Pagina -->
 <?php 
-include ("cabecera.php");
+include ("CabeceraAdministrador.php");
 include("Conexion.php");
 
 //Declaracion de variables para luego ser utilizadas en distintos procesos

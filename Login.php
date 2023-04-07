@@ -1,15 +1,13 @@
 <?php
 include 'Conexion.php';
-include 'Cabecera.php';
 
-session_start();
 $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
 $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
 
 if (isset($_POST['ingresar'])){
   if(isset($_POST["usuario"]) && !empty($_POST["usuario"]) && isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])){
 
-$sentencia=$conexion->prepare("SELECT usuario,contraseña FROM usuarios");
+$sentencia=$conexion->prepare("SELECT usuario,contraseña,habilitado FROM usuarios where habilitado like 'Si'");
 $sentencia->execute();
 $ListaUsuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -28,12 +26,13 @@ foreach($ListaUsuarios as $ListaUsuario){
       }
 }
 
+session_start();
 if ($ExisteUsuario==true){
-  echo "Usuario Encontrado";
+  $_SESSION['estatus']="usuario";
+  header("location:Usuario.php");
 }elseif (($_POST['usuario']=="11") && ($_POST['contrasenia']=="22") ){
+  $_SESSION['estatus']="admin";
   header("location:Peliculas.php");
-
-  $_SESSION['estatus']="logeado";
 
 }else{
   echo "Usuario No Encontrado";

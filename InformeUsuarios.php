@@ -1,6 +1,6 @@
 <?php
 include "Conexion.php";
-include "Cabecera.php";
+include "CabeceraAdministrador.php";
 
 $IdUsuario=(isset($_POST['idUsuario']))?$_POST['idUsuario']:"";
 $txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";
