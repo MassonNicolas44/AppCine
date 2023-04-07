@@ -2,8 +2,11 @@
 include "Conexion.php";
 include "Cabecera.php";
 
+$IdUsuario=(isset($_POST['idUsuario']))?$_POST['idUsuario']:"";
 $txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";
 $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
+$Habilitacion="Si";
+$anularHabilitacion="No";
 
     //Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "peliculas") desde la web
     $sentenciaSQL = $conexion->prepare("SELECT * FROM usuarios");
@@ -18,15 +21,28 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
     }elseif (isset($_POST['CancelarFecha'])){
         $txtFechaInicio="";
         $txtFechaFin="";
+    }elseif (isset($_POST['Habilitar'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE usuarios SET habilitado=:habilitado WHERE idUsuario=:idUsuario");
+        $sentenciaSQL->bindParam(':idUsuario',$IdUsuario);
+        $sentenciaSQL->bindParam(':habilitado',$Habilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformeUsuarios.php");
+    }elseif (isset($_POST['Inhabilitar'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE usuarios SET habilitado=:habilitado WHERE idUsuario=:idUsuario");
+        $sentenciaSQL->bindParam(':idUsuario',$IdUsuario);
+        $sentenciaSQL->bindParam(':habilitado',$anularHabilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformeUsuarios.php");
     }else{
 
     }
 
+
+
+
 ?>
 
 <br/>
-
-
 
 <div class="container">
 <div class="card">
@@ -47,13 +63,13 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
                     <th>Telefono</th>
                     <th>Email</th>
                     <th>Habilitado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-                foreach($listaUsuarios as $Usuarios){
-                    if ($Usuarios['habilitado']=="Si"){    
+                foreach($listaUsuarios as $Usuarios){ 
                 ?>
                 <tr>
                     <td><?php echo $Usuarios['IdUsuario']?> </td>
@@ -63,8 +79,15 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
                     <td><?php echo $Usuarios['telefono']?> </td>
                     <td><?php echo $Usuarios['email']?> </td>
                     <td><?php echo $Usuarios['habilitado']?></td>
+                    <td>
+                    <form method="post">
+                        <input type="hidden" name="idUsuario" IdUsuario="idUsuario" value="<?php echo $Usuarios['IdUsuario'];?>">
+                        <input type="submit" name="Habilitar" value="Habilitar" class="btn btn-primary" onclick="return confirmacionHabilitar()">
+                        <input type="submit" name="Inhabilitar" value="Inhabilitar" class="btn btn-danger" onclick="return confirmacionInhabilitar()">
+                    </form>
+                </td>
                 </tr>
-                <?php }}         
+                <?php }       
                     ?>
                 </tbody>
                 </table>
@@ -73,5 +96,25 @@ $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
     </div>
     <br/>
 </div>
+
+<script>
+    function confirmacionHabilitar(){
+        var respuesta = confirm("¿Deseas Habilitar este Usuario?");
+        if(respuesta==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    function confirmacionInhabilitar(){
+        var respuesta = confirm("¿Deseas Inhabilitar este Usuario?");
+        if(respuesta==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
 
 <?php

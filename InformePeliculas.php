@@ -3,8 +3,11 @@ include "Conexion.php";
 include "Cabecera.php";
 
 
+$IdPelicula=(isset($_POST['idPelicula']))?$_POST['idPelicula']:"";
+$IdProximasPelicula=(isset($_POST['idProximasPelicula']))?$_POST['idProximasPelicula']:"";
 $rdgTipo=(isset($_POST['Tipo']))?$_POST['Tipo']:"Peliculas";
-
+$Habilitacion="Si";
+$anularHabilitacion="No";
 
 if ($rdgTipo=="Peliculas"){
     $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas");
@@ -16,16 +19,36 @@ if ($rdgTipo=="Peliculas"){
     $listaPeliculas2=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 }
 
-
-    if (isset($_POST['SeleccionarFecha'])){
-            $txtFechaInicio=$_POST['txtFechaInicio'];
-            $txtFechaFin=$_POST['txtFechaFin'];
-    }elseif (isset($_POST['ImprimirInforme'])){
+    if (isset($_POST['ImprimirInforme'])){
             if ($rdgTipo=="Peliculas"){
                 header("Location:ImprimirInformePelicula.php");
             }elseif ($rdgTipo=="ProximasPeliculas"){
                 header("Location:ImprimirInformeProximasPelicula.php");
             }
+    }elseif (isset($_POST['HabilitarPelicula'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET habilitada=:habilitada WHERE idPelicula=:idPelicula");
+        $sentenciaSQL->bindParam(':idPelicula',$IdPelicula);
+        $sentenciaSQL->bindParam(':habilitada',$Habilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformePeliculas.php");
+    }elseif (isset($_POST['InhabilitarPelicula'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET habilitada=:habilitada WHERE idPelicula=:idPelicula");
+        $sentenciaSQL->bindParam(':idPelicula',$IdPelicula);
+        $sentenciaSQL->bindParam(':habilitada',$anularHabilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformePeliculas.php");
+    }elseif (isset($_POST['HabilitarProximasPeliculas'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET habilitada=:habilitada WHERE idPelicula=:idPelicula");
+        $sentenciaSQL->bindParam(':idPelicula',$IdProximasPelicula);
+        $sentenciaSQL->bindParam(':habilitada',$Habilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformePeliculas.php");
+    }elseif (isset($_POST['InhabilitarProximasPeliculas'])){
+        $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET habilitada=:habilitada WHERE idPelicula=:idPelicula");
+        $sentenciaSQL->bindParam(':idPelicula',$IdProximasPelicula);
+        $sentenciaSQL->bindParam(':habilitada',$anularHabilitacion);
+        $sentenciaSQL->execute();
+        header("Location:InformePeliculas.php");
     }else{
 
     }
@@ -88,13 +111,13 @@ if($rdgTipo=="Peliculas"){
                     <th>Descripcion</th>
                     <th>Imagen</th>
                     <th>Habilitada</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-                foreach($listaPeliculas as $pelicula){
-                    if ($pelicula['habilitada']=="Si"){    
+                foreach($listaPeliculas as $pelicula){ 
                 ?>
                 <tr>
                     <td><?php echo $pelicula['IdPelicula']?> </td>
@@ -109,8 +132,13 @@ if($rdgTipo=="Peliculas"){
                 <img src="../../../GamesOfMovies/img/<?php echo $pelicula['imgResource']?>" width="75" alt="">
                 </td>
                     <td><?php echo $pelicula['habilitada']?></td>
+                    <td> <form method="post">
+                        <input type="hidden" name="idPelicula" IdUsuario="idPelicula" value="<?php echo $pelicula['IdPelicula'];?>">
+                        <input type="submit" name="HabilitarPelicula" value="Habilitar" class="btn btn-primary" onclick="return confirmacionHabilitar()">
+                        <input type="submit" name="InhabilitarPelicula" value="Inhabilitar" class="btn btn-danger" onclick="return confirmacionInhabilitar()">
+                    </form>
                 </tr>
-                <?php }}         
+                <?php }         
                     ?>
                 </tbody>
                 </table>
@@ -134,13 +162,13 @@ if($rdgTipo=="Peliculas"){
                     <th>Imagen</th>
                     <th>Fecha Estreno</th>
                     <th>Habilitada</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
                 foreach($listaPeliculas2 as $pelicula2){
-                    if ($pelicula2['habilitada']=="Si"){    
                 ?>
                 <tr>
                     <td><?php echo $pelicula2['IdPelicula']?> </td>
@@ -154,8 +182,13 @@ if($rdgTipo=="Peliculas"){
                 </td>
                 <td><?php echo $pelicula2['fechaEstreno']?></td>
                     <td><?php echo $pelicula2['habilitada']?></td>
+                    <td> <form method="post">
+                        <input type="hidden" name="idProximasPelicula" IdUsuario="idProximasPelicula" value="<?php echo $pelicula2['IdPelicula'];?>">
+                        <input type="submit" name="HabilitarProximasPeliculas" value="Habilitar" class="btn btn-primary" onclick="return confirmacionHabilitar()">
+                        <input type="submit" name="InhabilitarProximasPeliculas" value="Inhabilitar" class="btn btn-danger" onclick="return confirmacionInhabilitar()">
+                    </form>
                 </tr>
-                <?php }}         
+                <?php }      
                     ?>
                 </tbody>
                 </table>
@@ -165,6 +198,26 @@ if($rdgTipo=="Peliculas"){
     <?php  }?>
     <br/>
 </div>
+
+<script>
+    function confirmacionHabilitar(){
+        var respuesta = confirm("¿Deseas Habilitar este Usuario?");
+        if(respuesta==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    function confirmacionInhabilitar(){
+        var respuesta = confirm("¿Deseas Inhabilitar este Usuario?");
+        if(respuesta==true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+</script>
 
 <?php
 

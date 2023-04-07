@@ -4,13 +4,11 @@ require "fpdf/fpdf.php";
 
 session_start();
 
-
-
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])){
     $FechaInicio=$_SESSION['txtFechaInicio'];
     $FechaFin=$_SESSION['txtFechaFin'];
-    $ReformaFechaInicio = date("Y-m-d", strtotime($FechaInicio));
-    $ReformaFechaFin = date("Y-m-d", strtotime($FechaFin));
+    $ReformaFechaInicio = date("d-m-Y", strtotime($FechaInicio));
+    $ReformaFechaFin = date("d-m-Y", strtotime($FechaFin));
     $FechaInicio=$ReformaFechaInicio;
     $FechaFin=$ReformaFechaFin;
 }
@@ -46,10 +44,10 @@ $pdf->Cell(135,5,"Informe Ventas",0,0,"C");
 $pdf->SetFont("Arial","",12);
 
 if (!empty($FechaInicio) && !empty($FechaFin)){
-    $pdf->Cell(25,5,"Fecha: ".date("Y/m/d"),0,1,"C");
+    $pdf->Cell(25,5,"Fecha: ".date("d/m/Y"),0,1,"C");
     $pdf->Cell(317,8,"Rango: ".$FechaInicio." al ".$FechaFin,0,1,"C");
 }else{
-    $pdf->Cell(25,5,"Fecha: ".date("Y/m/d"),0,1,"C");
+    $pdf->Cell(25,5,"Fecha: ".date("d/m/Y"),0,1,"C");
 }
 
 

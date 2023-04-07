@@ -4,10 +4,6 @@ include ("cabecera.php");
 include("Conexion.php");
 
 //Declaracion de variables para luego ser utilizadas en distintos procesos
-   $txtFechaInicio=(isset($_POST['txtFechaInicio']))?$_POST['txtFechaInicio']:"";
-   $txtFechaFin=(isset($_POST['txtFechaFin']))?$_POST['txtFechaFin']:"";
-
-
 
    $txtID=(isset($_POST['txtID']))?$_POST['txtID']:"";
    $txtTitulo=(isset($_POST['txtTitulo']))?$_POST['txtTitulo']:"";
@@ -255,29 +251,6 @@ include("Conexion.php");
             $validarModificar="SeleccionarProximaPelicula";
         break;
 
-        case "SeleccionarFecha":
-
-            if (!empty($txtFechaInicio) && !empty($txtFechaFin)){
-                $txtFechaInicio=$_POST['txtFechaInicio'];
-                $txtFechaFin=$_POST['txtFechaFin'];
-            }else{
-                $txtFechaInicio="";
-                $txtFechaFin="";
-            }
-            session_start();
-            $_SESSION['txtFechaInicio'] = $txtFechaInicio;
-            $_SESSION['txtFechaFin'] = $txtFechaFin;
-        break;
-
-        case "CancelarFecha":
-
-            $txtFechaInicio="";
-            $txtFechaFin="";
-            session_start();
-            $_SESSION['txtFechaInicio'] = $txtFechaInicio;
-            $_SESSION['txtFechaFin'] = $txtFechaFin;
-        break;
-
         case "Pasar a Cartelera":
             if (!empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) && 
             !empty($txtPrecio) && !empty($txtDescripcion)){
@@ -379,24 +352,6 @@ include("Conexion.php");
 <div class="col-md-3">
 <div class="col-md-3 col-md-offset-2"></div>
     <div class="card">
-        <div class="card-header">
-            Gestion Informe
-        </div>
-        <form method="post" enctype="multipart/form-data">
-        <div class="card-body">
-        <div class = "form-group">
-            <label> Fecha Inicio:</label>
-            <input type="date"  class="form-control" value="<?php echo $txtFechaInicio?>" name="txtFechaInicio">
-        </div>
-        <div class = "form-group">
-            <label> Fecha Fin:</label>
-            <input type="date"  class="form-control" value="<?php echo $txtFechaFin?>" name="txtFechaFin">
-        </div>
-            <button type="submit" name="accion" value="SeleccionarFecha" class="btn btn-primary">Seleccionar</button>
-            <button type="submit" name="accion" value="CancelarFecha" class="btn btn-info">Cancelar</button>
-        </form>
-    </div>
-
         <div class="card-header">
             Gestion Peliculas
         </div>
