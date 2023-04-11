@@ -23,9 +23,9 @@ if ($_SESSION['estatus']!="usuario"){
     <?php $url='http://'.$_SERVER['HTTP_HOST']."/GamesOfMovies"?>
     <nav class="navbar navbar-expand -lg navbar-dark bg-primary">
         <div class="nav navbar-nav">
-            <a class="nav-item nav-link" href="<?php echo $url;?>/Peliculas.php"> Inicio |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/Peliculas.php"> Reservar Boleto |֎|</a>
-            <a class="nav-item nav-link" href="<?php echo $url;?>/Peliculas.php"> Anular Boleto |֎|</a>
+            <a class="nav-item nav-link" href="<?php echo $url;?>/Cartelera.php"> Cartelera |֎|</a>
+            <a class="nav-item nav-link" href="<?php echo $url;?>/ProximaCartelera.php"> Proximas Peliculas |֎|</a>
+            <a class="nav-item nav-link" href="<?php echo $url;?>/AnularBoleto.php"> Anular Boleto |֎|</a>
             <a class="nav-item nav-link" href="<?php echo $url;?>/CerrarSession.php">Cerrar Sesion |֎|</a>
         </div>
     </nav>

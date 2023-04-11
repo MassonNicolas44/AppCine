@@ -29,7 +29,9 @@ foreach($ListaUsuarios as $ListaUsuario){
 session_start();
 if ($ExisteUsuario==true){
   $_SESSION['estatus']="usuario";
-  header("location:Usuario.php");
+  $_SESSION['Usuario']="".$usuario;
+
+  header("location:Cartelera.php");
 }elseif (($_POST['usuario']=="11") && ($_POST['contrasenia']=="22") ){
   $_SESSION['estatus']="admin";
   header("location:Peliculas.php");
