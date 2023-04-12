@@ -1,15 +1,18 @@
 <?php
 include ("CabeceraUsuario.php");
 include("Conexion.php");
+
 $FechaActual=date("Y-m-d");
 
 $CantidadBoleto=(isset($_POST['CantidadBoleto']))?$_POST['CantidadBoleto']:"0";
 $PrecioFinal=(isset($_POST['PrecioFinal']))?$_POST['PrecioFinal']:"0";
 $FechaFinal=(isset($_POST['fechaFinal']))?$_POST['fechaFinal']:"".$FechaActual;
 $Contador=(int)$CantidadBoleto;
+$HorarioPelicula=(isset($_POST['horarioPelicula']))?$_POST['horarioPelicula']:"16hs";
 
-$BuscarIdPelicula=$_SESSION['IdPelicula'];
-$sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si' And IdPelicula=$BuscarIdPelicula");
+$IdUsuario=$_SESSION['IdUsuario'];
+$IdPelicula=$_SESSION['IdPelicula'];
+$sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si' And IdPelicula=$IdPelicula");
 $sentenciaSQL->execute();
 $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
@@ -24,10 +27,15 @@ $Contador=$Contador+1;
   $Contador=(int)$CantidadBoleto-1;
 }elseif (isset($_POST['Reserva'])){
   $PrecioFinal=$Contador*$PrecioUnico;
-echo "reservado";
-echo "Fecha: ".$FechaFinal;
-echo "Cantidad de Boletos: ".$CantidadBoleto;
-echo "Precio Final: ".$PrecioFinal;
+
+
+  $FechaBD = date("d-m-Y", strtotime($FechaFinal));
+
+//Sentencia para realizar la carga de una nueva proyeccion a la base de datos
+$sentencia="INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
+VALUES ('$IdPelicula','$IdUsuario','$FechaBD','$HorarioPelicula','$CantidadBoleto','$PrecioFinal','No')";
+$accion = $conexion->query($sentencia); 
+header("location:Cartelera.php"); 
 }
 
 $PrecioFinal=$Contador*$PrecioUnico;
@@ -48,7 +56,6 @@ foreach($listaPeliculas as $pelicula){
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">Titulo: <?php echo $pelicula['titulo'];  ?></h5>
-        <br/>
         <p class="card-text">Descripcion: <?php  echo $pelicula['descripcion'];?><br/>
         Duracion: <?php echo $pelicula['duracion'];?> Min<br/>
         Restriccion Edad: <?php echo $pelicula['restriccionEdad'];?><br/>
@@ -57,7 +64,6 @@ foreach($listaPeliculas as $pelicula){
         Precio: <?php echo $pelicula['precio'];?> $<br/>
 
         </p>
-        <br/>
         <br/>
 
         <form action="ReservarBoleto.php" method="post">
@@ -76,6 +82,11 @@ min="<?php echo $fechaActual?>"
 max="<?php echo $Año?>-<?php echo $Mes?>-<?php echo $Dia;?>">
        </br>
 
+       <label >Horario Pelicula:</label>
+<br/> 16 Hs <input type="radio" <?php echo ($HorarioPelicula=="16hs")?"checked":""; ?> name="horarioPelicula" value="16hs">
+<br/> 19 Hs <input type="radio" <?php echo ($HorarioPelicula=="19hs")?"checked":""; ?> name="horarioPelicula" value="19hs">
+<br/> 22 Hs <input type="radio" <?php echo ($HorarioPelicula=="22hs")?"checked":""; ?> name="horarioPelicula" value="22hs">
+<br/>
         <label >Cantidad Boleto:</label>
         <div class = "col">
         <button class="btn btn-primary" type="submit" name="Menos">-</button>

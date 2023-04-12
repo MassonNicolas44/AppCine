@@ -7,7 +7,7 @@ $contrasenia=(isset($_POST['contrasenia']))?$_POST['contrasenia']:"";
 if (isset($_POST['ingresar'])){
   if(isset($_POST["usuario"]) && !empty($_POST["usuario"]) && isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])){
 
-$sentencia=$conexion->prepare("SELECT usuario,contraseña,habilitado FROM usuarios where habilitado like 'Si'");
+$sentencia=$conexion->prepare("SELECT IdUsuario,usuario,contraseña,habilitado FROM usuarios where habilitado like 'Si'");
 $sentencia->execute();
 $ListaUsuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
@@ -28,8 +28,11 @@ foreach($ListaUsuarios as $ListaUsuario){
 
 session_start();
 if ($ExisteUsuario==true){
+  $IdUsuario=$ListaUsuario['IdUsuario'];
+
   $_SESSION['estatus']="usuario";
   $_SESSION['Usuario']="".$usuario;
+  $_SESSION['IdUsuario']="".$IdUsuario;
 
   header("location:Cartelera.php");
 }elseif (($_POST['usuario']=="11") && ($_POST['contrasenia']=="22") ){
