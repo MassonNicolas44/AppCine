@@ -2,7 +2,6 @@
 
 //PHP para realizar la carga de nuevo usuario a la base de datos
     include 'Conexion.php';
-    include 'Cabecera.php';
     
     $nombre=(isset($_POST['nombre']))?$_POST['nombre']:"";
     $usuario=(isset($_POST['usuario']))?$_POST['usuario']:"";
@@ -49,8 +48,8 @@ if ($ExisteUsuario==true){
   echo "Registro exitoso";
   
   //Sentencia para insertar un nuevo usuario a la base de datos desde Android
-  $sentencia="INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña)
-  VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia')";
+  $sentencia="INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña,habilitado)
+  VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia','Si')";
   $accion = $conexion->query($sentencia);
   header("location:Login.php");
 }

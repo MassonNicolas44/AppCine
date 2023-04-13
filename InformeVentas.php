@@ -8,7 +8,7 @@ $rdgTipo=(isset($_POST['Tipo']))?$_POST['Tipo']:"Ventas";
 
 
 if ($rdgTipo=="Ventas"){
-    $sentenciaSQL = $conexion->prepare("SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal
+    $sentenciaSQL = $conexion->prepare("SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pe.habilitada
     FROM proyecciones AS pr 
     INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
     INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
@@ -16,14 +16,14 @@ if ($rdgTipo=="Ventas"){
     $sentenciaSQL->execute();
     $listaVentas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 }elseif ($rdgTipo=="Recaudacion"){
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto FROM proyecciones AS pr INNER JOIN peliculas AS pe
+    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     Group by pe.titulo
     ORDER BY Recaudado desc");    
     $sentenciaSQL->execute();
     $listaRecaudacion=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 }elseif ($rdgTipo=="Boletos"){
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto FROM proyecciones AS pr INNER JOIN peliculas AS pe
+    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     Group by pe.titulo
     ORDER BY TotalBoleto desc");
@@ -172,7 +172,7 @@ if($rdgTipo=="Ventas"){
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Cantidad Boleto</th>
-                    <th>Precio Final [$]</th>
+                    <th>Precio Final</th>
                 </tr>
             </thead>
             <tbody>
@@ -183,13 +183,13 @@ if($rdgTipo=="Ventas"){
                 ?>
                 <tr>
 
-                     <td><?php echo $Ventas['IdUsuario']?> </td>
+                    <td><?php echo $Ventas['IdUsuario']?> </td>
                     <td><?php echo $Ventas['usuario']?> </td>
                     <td><?php echo $Ventas['titulo']?> </td>
                     <td><?php echo $Ventas['fechaPelicula']?> </td>
                     <td><?php echo $Ventas['horaPelicula']?> </td>
                     <td><?php echo $Ventas['CantBoleto']?></td>
-                    <td><?php echo $Ventas['precioFinal']?></td>
+                    <td><?php echo $Ventas['precioFinal']?> $</td>
 
                 </tr>
                 <?php }         
@@ -210,9 +210,9 @@ if($rdgTipo=="Ventas"){
                 <tr>
                     <th>Id</th>
                     <th>Titulo</th>
-                    <th>Duracion</th>
                     <th>Categoria</th>
                     <th>Tipo</th>
+                    <th>Activa</th>
                     <th>Cantidad Boleto</th>
                     <th>Total Recaudado</th>
                 </tr>
@@ -225,11 +225,11 @@ if($rdgTipo=="Ventas"){
                 <tr>
                     <td><?php echo $Recaudacion['IdPelicula']?> </td>
                     <td><?php echo $Recaudacion['titulo']?> </td>
-                    <td><?php echo $Recaudacion['duracion']?> </td>
                     <td><?php echo $Recaudacion['categoria']?> </td>
                     <td><?php echo $Recaudacion['tipo']?> </td>
+                    <td><?php echo $Recaudacion['habilitada']?> </td>
                     <td><?php echo $Recaudacion['TotalBoleto']?></td>
-                    <td><?php echo $Recaudacion['Recaudado']?></td>
+                    <td><?php echo $Recaudacion['Recaudado']?> $</td>
                 </tr>
                 <?php }         
                     ?>
@@ -249,9 +249,9 @@ if($rdgTipo=="Ventas"){
                 <tr>
                     <th>Id</th>
                     <th>Titulo</th>
-                    <th>Duracion</th>
                     <th>Categoria</th>
                     <th>Tipo</th>
+                    <th>Activa</th>
                     <th>Cantidad Boleto</th>
                     <th>Total Recaudado</th>
                 </tr>
@@ -264,11 +264,11 @@ if($rdgTipo=="Ventas"){
                 <tr>
                     <td><?php echo $Boletos['IdPelicula']?> </td>
                     <td><?php echo $Boletos['titulo']?> </td>
-                    <td><?php echo $Boletos['duracion']?> </td>
                     <td><?php echo $Boletos['categoria']?> </td>
                     <td><?php echo $Boletos['tipo']?> </td>
+                    <td><?php echo $Boletos['habilitada']?> </td>
                     <td><?php echo $Boletos['TotalBoleto']?></td>
-                    <td><?php echo $Boletos['Recaudado']?></td>
+                    <td><?php echo $Boletos['Recaudado']?> $</td>
                 </tr>
                 <?php }         
                     ?>

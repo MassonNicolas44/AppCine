@@ -2,9 +2,18 @@
 include ("CabeceraUsuario.php");
 include("Conexion.php");
 
+
+
+/*
+REVISAR LAS FECHAS AL FINAL DE MES Y TAMBIEN LA CANTIDAD DE DIAS
+AGREGAR TEXTO DONDE MUESTRE LA CANTIDAD DE BOLETOS DISPONIBLES
+AGREGAR VERIFICACION DE CANTIDAD DE BOLETOS Y NO DEJE INGRESAR EN CASO DE SER AFIRMATIVO
+
+*/
+
 $FechaActual=date("Y-m-d");
 
-$CantidadBoleto=(isset($_POST['CantidadBoleto']))?$_POST['CantidadBoleto']:"0";
+$CantidadBoleto=(isset($_POST['CantidadBoleto']))?$_POST['CantidadBoleto']:"1";
 $PrecioFinal=(isset($_POST['PrecioFinal']))?$_POST['PrecioFinal']:"0";
 $FechaFinal=(isset($_POST['fechaFinal']))?$_POST['fechaFinal']:"".$FechaActual;
 $Contador=(int)$CantidadBoleto;
@@ -21,24 +30,28 @@ foreach($listaPeliculas as $pelicula){
 $PrecioUnico=$pelicula['precio'];
 }
 
+
 if (isset($_POST['Mas'])){
-$Contador=$Contador+1;
-}elseif (isset($_POST['Menos'])){
-  $Contador=(int)$CantidadBoleto-1;
-}elseif (isset($_POST['Reserva'])){
+  $Contador=(int)$CantidadBoleto+1;
+  }elseif (isset($_POST['Menos'])){
+    $Contador=(int)$CantidadBoleto-1;
+  }elseif (isset($_POST['Reserva'])){
+    $PrecioFinal=$Contador*$PrecioUnico;
+  
+    $FechaBD = date("d-m-Y", strtotime($FechaFinal));
+  
+  //Sentencia para realizar la carga de una nueva proyeccion a la base de datos
+  $sentencia="INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
+  VALUES ('$IdPelicula','$IdUsuario','$FechaBD','$HorarioPelicula','$CantidadBoleto','$PrecioFinal','No')";
+  $accion = $conexion->query($sentencia); 
+  header("location:Cartelera.php"); 
+  }
+  
   $PrecioFinal=$Contador*$PrecioUnico;
-
-
-  $FechaBD = date("d-m-Y", strtotime($FechaFinal));
-
-//Sentencia para realizar la carga de una nueva proyeccion a la base de datos
-$sentencia="INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
-VALUES ('$IdPelicula','$IdUsuario','$FechaBD','$HorarioPelicula','$CantidadBoleto','$PrecioFinal','No')";
-$accion = $conexion->query($sentencia); 
-header("location:Cartelera.php"); 
-}
-
-$PrecioFinal=$Contador*$PrecioUnico;
+  if ($Contador==0){
+    $Contador=1;
+    $PrecioFinal=$Contador*$PrecioUnico;
+  }
 
 ?>
 <?php

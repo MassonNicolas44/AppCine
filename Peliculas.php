@@ -503,11 +503,11 @@ include("Conexion.php");
             <tr>
                 <th>Id</th>
                 <th>Titulo</th>
-                <th>Duracion [Min]</th>
+                <th>Duracion</th>
                 <th>Restriccion Edad</th>
                 <th>Categoria</th>
                 <th>Tipo</th>
-                <th>Precio [$]</th>
+                <th>Precio</th>
                 <th>Descripcion</th>
                 <th>Imagen</th>
                 <th>Acciones</th>
@@ -522,11 +522,11 @@ include("Conexion.php");
             <tr>
                 <td><?php echo $pelicula['IdPelicula']?> </td>
                 <td><?php echo $pelicula['titulo']?> </td>
-                <td><?php echo $pelicula['duracion']?> </td>
+                <td><?php echo $pelicula['duracion']?> Min</td>
                 <td><?php echo $pelicula['restriccionEdad']?> </td>
                 <td><?php echo $pelicula['categoria']?> </td>
                 <td><?php echo $pelicula['tipo']?></td>
-                <td><?php echo $pelicula['precio']?></td>
+                <td><?php echo $pelicula['precio']?> $</td>
                 <td><?php echo $pelicula['descripcion']?></td>
                 <td>
                     <img src="../../../GamesOfMovies/img/<?php echo $pelicula['imgResource']?>" width="50" alt="">
@@ -551,7 +551,7 @@ include("Conexion.php");
             <tr>
                 <th>Id</th>
                 <th>Titulo</th>
-                <th>Duracion [Min]</th>
+                <th>Duracion</th>
                 <th>Restriccion Edad</th>
                 <th>Categoria</th>
                 <th>Tipo</th>
@@ -568,7 +568,7 @@ include("Conexion.php");
         <tr>
             <td><?php echo $pelicula2['IdPelicula']?> </td>
             <td><?php echo $pelicula2['titulo']?> </td>
-            <td><?php echo $pelicula2['duracion']?> </td>
+            <td><?php echo $pelicula2['duracion']?> Min</td>
             <td><?php echo $pelicula2['restriccionEdad']?> </td>
             <td><?php echo $pelicula2['categoria']?> </td>
             <td><?php echo $pelicula2['tipo']?></td>

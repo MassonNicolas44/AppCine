@@ -4,7 +4,8 @@ require "fpdf/fpdf.php";
 
 
 //Sentencia para seleccionar informes de peliculas
-$sentenciaSQL = $conexion->prepare("SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio FROM peliculas");
+$sentenciaSQL = $conexion->prepare("SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio,habilitada FROM peliculas 
+Where habilitada like 'Si'");
 $sentenciaSQL->execute();
 $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
@@ -17,7 +18,7 @@ $pdf->Cell(25);
 $pdf->Cell(135,5,"Informe de Peliculas",0,0,"C");
 $pdf->SetFont("Arial","",12);
 
-$pdf->Cell(25,5,"Fecha: ".date("Y/m/d"),0,1,"C");
+$pdf->Cell(25,5,"Fecha: ".date("d/m/Y"),0,1,"C");
 $pdf->Ln(10);
 $pdf->SetFont("Arial","B",12);
 $pdf->Cell(12,10,"Id",1,0,"C");
@@ -41,7 +42,7 @@ foreach($listaPeliculas as $pelicula){
     $pdf->Cell(25,6,utf8_decode($pelicula['categoria']),1,0,"C");
     $pdf->Cell(30,6,$pelicula['restriccionEdad'],1,0,"C");
     $pdf->Cell(14,6,$pelicula['tipo'],1,0,"C");
-    $pdf->Cell(18,6,$pelicula['precio']."$",1,1,"C");
+    $pdf->Cell(18,6,$pelicula['precio']." $",1,1,"C");
 }
 
 $pdf->Output();

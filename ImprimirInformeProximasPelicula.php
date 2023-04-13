@@ -15,7 +15,7 @@ $pdf->SetFont("Arial","B",16);
 $pdf->Cell(25);
 $pdf->Cell(135,5,"Informe de Proximas Peliculas",0,0,"C");
 $pdf->SetFont("Arial","",12);
-$pdf->Cell(25,5,"Fecha: ".date("Y/m/d"),0,1,"C");
+$pdf->Cell(25,5,"Fecha: ".date("d/m/Y"),0,1,"C");
 $pdf->Ln(10);
 $pdf->SetFont("Arial","B",12);
 $pdf->Cell(12,10,"Id",1,0,"C");
