@@ -23,7 +23,7 @@ foreach($listaProximasPeliculas as $ProximasPeliculas){
 
       <div class="col">
 
-      <a href="<?php echo $url;?>/Usuario3.php"><img src="../../../GamesOfMovies/img/<?php echo $ProximasPeliculas['imgResource']?>" width="250" alt="">
+<img src="../../../GamesOfMovies/img/<?php echo $ProximasPeliculas['imgResource']?>" width="250" alt="">
 </a>
     </div>
         <div class="card-body">

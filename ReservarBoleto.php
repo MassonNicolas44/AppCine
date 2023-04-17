@@ -3,7 +3,7 @@ include ("CabeceraUsuario.php");
 include("Conexion.php");
 
 
-
+  
 /*
 REVISAR LAS FECHAS AL FINAL DE MES Y TAMBIEN LA CANTIDAD DE DIAS
 AGREGAR TEXTO DONDE MUESTRE LA CANTIDAD DE BOLETOS DISPONIBLES
@@ -11,47 +11,64 @@ AGREGAR VERIFICACION DE CANTIDAD DE BOLETOS Y NO DEJE INGRESAR EN CASO DE SER AF
 
 */
 
-$FechaActual=date("Y-m-d");
 
 $CantidadBoleto=(isset($_POST['CantidadBoleto']))?$_POST['CantidadBoleto']:"1";
-$PrecioFinal=(isset($_POST['PrecioFinal']))?$_POST['PrecioFinal']:"0";
-$FechaFinal=(isset($_POST['fechaFinal']))?$_POST['fechaFinal']:"".$FechaActual;
 $Contador=(int)$CantidadBoleto;
-$HorarioPelicula=(isset($_POST['horarioPelicula']))?$_POST['horarioPelicula']:"16hs";
+$PrecioFinal=(isset($_POST['PrecioFinal']))?$_POST['PrecioFinal']:"0";
+
 
 $IdUsuario=$_SESSION['IdUsuario'];
 $IdPelicula=$_SESSION['IdPelicula'];
+$horaPelicula=$_SESSION['horaPelicula'];
+$fechaPelicula=$_SESSION['fechaPelicula'];
+$Disponibilidad = 50;
+
+
 $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si' And IdPelicula=$IdPelicula");
 $sentenciaSQL->execute();
 $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
-foreach($listaPeliculas as $pelicula){ 
 
+
+$sentenciaSQL2 = $conexion->prepare("SELECT Sum(pr.CantBoleto) AS Disponibilidad,pr.fechaPelicula,pr.horaPelicula,pe.IdPelicula FROM proyecciones AS pr INNER JOIN peliculas AS pe
+ON pe.IdPelicula=pr.IdPelicula WHERE pr.fechaPelicula='$fechaPelicula' AND pr.horaPelicula='$horaPelicula' AND pe.IdPelicula=$IdPelicula");
+$sentenciaSQL2->execute();
+$listaPeliculas2=$sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
+
+
+foreach($listaPeliculas2 as $pelicula2){ 
+  $CantBoleto=$pelicula2['Disponibilidad'];
+  }
+
+foreach($listaPeliculas as $pelicula){ 
 $PrecioUnico=$pelicula['precio'];
 }
 
-
 if (isset($_POST['Mas'])){
-  $Contador=(int)$CantidadBoleto+1;
+  $Contador=(int)$CantidadBoleto+1; 
   }elseif (isset($_POST['Menos'])){
-    $Contador=(int)$CantidadBoleto-1;
-  }elseif (isset($_POST['Reserva'])){
-    $PrecioFinal=$Contador*$PrecioUnico;
-  
-    $FechaBD = date("d-m-Y", strtotime($FechaFinal));
-  
+    if ($Contador!=1){
+      $Contador=(int)$CantidadBoleto-1;
+    }
+  }   
+    elseif (isset($_POST['Reserva'])){
+      $PrecioFinal=$Contador*$PrecioUnico;
   //Sentencia para realizar la carga de una nueva proyeccion a la base de datos
   $sentencia="INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
-  VALUES ('$IdPelicula','$IdUsuario','$FechaBD','$HorarioPelicula','$CantidadBoleto','$PrecioFinal','No')";
+  VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No')";
   $accion = $conexion->query($sentencia); 
   header("location:Cartelera.php"); 
   }
+
+  $CantBoleto+=$Contador;
+  $Disponibilidad = $Disponibilidad - $CantBoleto;
+
+  if ($Disponibilidad<0){
+    $Contador=$Contador-1;
+    $Disponibilidad = $Disponibilidad+1;
+  }
   
   $PrecioFinal=$Contador*$PrecioUnico;
-  if ($Contador==0){
-    $Contador=1;
-    $PrecioFinal=$Contador*$PrecioUnico;
-  }
 
 ?>
 <?php
@@ -80,33 +97,28 @@ foreach($listaPeliculas as $pelicula){
         <br/>
 
         <form action="ReservarBoleto.php" method="post">
+      
 
-        <label >Fecha:</label>
+<div class = "row">
+<div class = "col-md-4"><label >Cantidad Boleto:</label></div>
+<div class = "col-md-4"><label >Disponibilidad Boleto:</label></div>
 
-        <?php $fechaActual = date("Y-m-d");
-        $Dia=(date('d', strtotime($fechaActual))+15);
-        $Mes=(date('m', strtotime($fechaActual."+1 month")));
-        $Año=(date('Y', strtotime($fechaActual)));
-        ?>
-        
-<input type="date" id="start" name="fechaFinal" 
-value="<?php echo $FechaFinal?>" 
-min="<?php echo $fechaActual?>" 
-max="<?php echo $Año?>-<?php echo $Mes?>-<?php echo $Dia;?>">
-       </br>
-
-       <label >Horario Pelicula:</label>
-<br/> 16 Hs <input type="radio" <?php echo ($HorarioPelicula=="16hs")?"checked":""; ?> name="horarioPelicula" value="16hs">
-<br/> 19 Hs <input type="radio" <?php echo ($HorarioPelicula=="19hs")?"checked":""; ?> name="horarioPelicula" value="19hs">
-<br/> 22 Hs <input type="radio" <?php echo ($HorarioPelicula=="22hs")?"checked":""; ?> name="horarioPelicula" value="22hs">
-<br/>
-        <label >Cantidad Boleto:</label>
-        <div class = "col">
-        <button class="btn btn-primary" type="submit" name="Menos">-</button>
-        <input type="text" value="<?php echo $Contador;?>" name="CantidadBoleto" placeholder=1 size="2" maxlength="5" >
+</div>
+<div class = "row">
+<div class = "col-md-4">
+<button class="btn btn-primary" type="submit" name="Menos">-</button>
+        <input type="text" value="<?php echo $Contador;?>" name="CantidadBoleto" readonly  placeholder=1 size="2" maxlength="5" >
         <button class="btn btn-primary" type="submit" name="Mas">+</button>
-        
-        </div>
+</div>
+<div class = "col-md-4">
+  <input type="text" value="<?php echo $Disponibilidad;?>" name="DisponibilidadBoleto" disabled placeholder=1 size="2" maxlength="5" >
+</div>
+</div>
+
+<label >Fecha Pelicula: <?php echo $fechaPelicula ?></label>
+</br>
+<label >Hora Pelicula: <?php echo $horaPelicula ?></label>
+
 </br>
         Precio Final: <input type="text" value="<?php echo $PrecioFinal;?>" name="PrecioFinal" size="5" maxlength="5" disabled=true> $
   <br/>
