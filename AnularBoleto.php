@@ -2,10 +2,11 @@
 include "Conexion.php";
 include "CabeceraUsuario.php";
 
+//Variables a utilizar
 $Anular="Si";
 $NombreUsuario=$_SESSION['Usuario'];
 $IdVenta=(isset($_POST['idVenta']))?$_POST['idVenta']:"";
-
+//Consulta a la Base de Datos para Luego en caso de anular un boleto, realice un update y modifique la columna correspondiente
     $sentenciaSQL = $conexion->prepare("SELECT pr.IdVenta,us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pr.Anulada
     FROM proyecciones AS pr 
     INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
@@ -47,9 +48,8 @@ $IdVenta=(isset($_POST['idVenta']))?$_POST['idVenta']:"";
             </thead>
             <tbody>
                 <?php 
-                //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-                foreach($listaVentas as $Ventas){
-                        
+                //Sentencia para recorrer las Ventas y ir llenando cada fila con los datos que correspondientes
+                foreach($listaVentas as $Ventas){ 
                 ?>
                 <tr>
                     <td><?php echo $Ventas['usuario']?> </td>
@@ -76,7 +76,9 @@ $IdVenta=(isset($_POST['idVenta']))?$_POST['idVenta']:"";
 </div>
 
 <script>
+
     function Anular(){
+        //mensaje de confirmacion de anulacion de reserva
         var respuesta = confirm("¿Deseas Anular esta Reserva?");
         if(respuesta==true){
             return true;

@@ -2,16 +2,6 @@
 include ("CabeceraUsuario.php");
 include("Conexion.php");
 
-
-  
-/*
-REVISAR LAS FECHAS AL FINAL DE MES Y TAMBIEN LA CANTIDAD DE DIAS
-AGREGAR TEXTO DONDE MUESTRE LA CANTIDAD DE BOLETOS DISPONIBLES
-AGREGAR VERIFICACION DE CANTIDAD DE BOLETOS Y NO DEJE INGRESAR EN CASO DE SER AFIRMATIVO
-
-*/
-
-
 $CantidadBoleto=(isset($_POST['CantidadBoleto']))?$_POST['CantidadBoleto']:"1";
 $Contador=(int)$CantidadBoleto;
 $PrecioFinal=(isset($_POST['PrecioFinal']))?$_POST['PrecioFinal']:"0";

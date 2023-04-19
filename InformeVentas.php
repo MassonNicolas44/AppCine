@@ -41,7 +41,6 @@ if ($rdgTipo=="Ventas"){
             $txtFechaInicio="";
             $txtFechaFin="";
         }
-        session_start();
         $_SESSION['txtFechaInicio'] = $txtFechaInicio;
         $_SESSION['txtFechaFin'] = $txtFechaFin;
 

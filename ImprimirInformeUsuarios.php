@@ -3,7 +3,6 @@ require "Conexion.php";
 require "fpdf/fpdf.php";
 
 //Sentencia para recuperar lista de usuarios desde base de datos
-
 $sentenciaSQL = $conexion->prepare("SELECT * FROM usuarios");
 $sentenciaSQL->execute();
 $listaUsuarios=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);

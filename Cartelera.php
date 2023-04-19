@@ -2,16 +2,17 @@
 include ("CabeceraUsuario.php");
 include("Conexion.php");
 
+//Variables a utilizar
 $IdPelicula=(isset($_POST['idPelicula']))?$_POST['idPelicula']:"";
-$FechaActual=date("Y-m-d");
-$FechaFinal=(isset($_POST['fechaFinal']))?$_POST['fechaFinal']:"".$FechaActual;
+$FechaFinal=(isset($_POST['fechaFinal']))?$_POST['fechaFinal']:"".date("Y-m-d");;
 $FechaBD=date('d-m-Y', strtotime($FechaFinal));
 
-
+//Consulta sobre la tabla "Peliculas" que luego es utilizada para ser mostradas en la pagina
 $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si'");
 $sentenciaSQL->execute();
 $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
+//Condicionales, en el cual se guarda en la Session las variables de Cartelera-IdPelicula-HoraPelicula-FechaPelicula, que son utilizadas al cambiar de pagina
 if (isset($_POST['16hs'])){
   $_SESSION['Cartelera']="Si";
   $_SESSION['IdPelicula']=$IdPelicula;
@@ -63,16 +64,44 @@ foreach($listaPeliculas as $pelicula){
 
         <label >Fecha:</label>
 
-<?php $fechaActual = date("Y-m-d");
-$Dia=(date('d', strtotime($fechaActual))+15);
-$Mes=(date('m', strtotime($fechaActual."+1 month")));
-$Año=(date('Y', strtotime($fechaActual)));
+<?php// $fechaActual = date("Y-m-d");
+
+
+//Variables donde se guarda independientemente el dia,mes y Año actuales, Variables Minimas que son utilizadas para el rango de la fecha
+$DiaMin=(date('d', strtotime(date("Y-m-d"))));
+$MesMin=(date('m', strtotime(date("Y-m-d"))));
+$AñoMin=(date('Y', strtotime(date("Y-m-d"))));
+
+//Variables donde se guarda independientemente el dia,mes y Año actuales, Variables Maximas que son utilizadas para el rango de la fecha
+$DiaMax=(date('d', strtotime(date("Y-m-d")))+15);
+$MesMax=(date('m', strtotime(date("Y-m-d")."+1 month")));
+$AñoMax=(date('Y', strtotime(date("Y-m-d"))));
+
+//Dependiende que mes y los dias maximos que tenga el mes correspondiente, se cambia de cambia de mes y se recalculan los dias
+if ($DiaMax>28 && $MesMax==02){
+  $DiaMax=(date('d', strtotime($DiaMax))-28);
+  $MesMax=(date('m', strtotime($MesMax."+1 month")));
+}elseif ($DiaMax>30 && ($MesMax==04 || $MesMax==06 || $MesMax==09 || $MesMax==11)){
+  $DiaMax=(date('d', strtotime($DiaMax))-30);
+  $MesMax=(date('m', strtotime($MesMax."+1 month")));
+}elseif ($DiaMax>31 && ($MesMax==01 || $MesMax==03 || $MesMax==05 || $MesMax==07 || $MesMax==08 || $MesMax==10)){
+  $DiaMax=(date('d', strtotime($DiaMax))-31);
+  $MesMax=(date('m', strtotime($MesMax."+1 month")));
+}elseif ($DiaMax>31 && $MesMax==12){
+  $DiaMax=(date('d', strtotime($DiaMax))-31);
+  $MesMax=(date('m', strtotime($MesMax."-11 month")));
+  $AñoMax=(date('Y', strtotime($AñoMax."+1 year")));
+}
+
+
+PROBAR LOS FILTROS POR FECHAS
+
 ?>
 
 <input type="date" id="start" name="fechaFinal" 
 value="<?php echo $FechaFinal?>" 
-min="<?php echo $fechaActual?>" 
-max="<?php echo $Año?>-<?php echo $Mes?>-<?php echo $Dia;?>">
+min="<?php echo $AñoMin?>-<?php echo $MesMin?>-<?php echo $DiaMin;?>" 
+max="<?php echo $AñoMax?>-<?php echo $MesMax?>-<?php echo $DiaMax;?>">
 </br>
 </br>
         <label >Horario Pelicula:</label>

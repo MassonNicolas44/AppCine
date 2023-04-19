@@ -4,16 +4,14 @@ require "fpdf/fpdf.php";
 
 session_start();
 
+//Condicionales para preguntar si se ha seleccionado un rango de fecha para el informe
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])){
-    $FechaInicio=$_SESSION['txtFechaInicio'];
-    $FechaFin=$_SESSION['txtFechaFin'];
-    $ReformaFechaInicio = date("d-m-Y", strtotime($FechaInicio));
-    $ReformaFechaFin = date("d-m-Y", strtotime($FechaFin));
-    $FechaInicio=$ReformaFechaInicio;
-    $FechaFin=$ReformaFechaFin;
+    $FechaInicio=date("d-m-Y", strtotime($_SESSION['txtFechaInicio']));
+    $FechaFin=date("d-m-Y", strtotime($_SESSION['txtFechaFin']));
 }
 
 //Sentencia para ranking de peliculas ordenada por mayor recaudacion
+//Condicional donde si no se selecciona un rango de fechas, se muestran todos las recaudaciones en general
 if (!empty($FechaInicio) && !empty($FechaFin)){
     $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 

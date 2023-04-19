@@ -4,19 +4,16 @@ require "fpdf/fpdf.php";
 
 session_start();
 
+//Condicionales para preguntar si se ha seleccionado un rango de fecha para el informe
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])){
-    $FechaInicio=$_SESSION['txtFechaInicio'];
-    $FechaFin=$_SESSION['txtFechaFin'];
-    $ReformaFechaInicio = date("d-m-Y", strtotime($FechaInicio));
-    $ReformaFechaFin = date("d-m-Y", strtotime($FechaFin));
-    $FechaInicio=$ReformaFechaInicio;
-    $FechaFin=$ReformaFechaFin;
+    $FechaInicio=date("d-m-Y", strtotime($_SESSION['txtFechaInicio']));
+    $FechaFin=date("d-m-Y", strtotime($_SESSION['txtFechaFin']));
 }
 
 
 //Sentencia para recuperar la cantidad de ventas por cada pelicula
+//Condicional donde si no se selecciona un rango de fechas, se muestran todos los boletos en general
 if (!empty($FechaInicio) && !empty($FechaFin)){
-    
     $sentenciaSQL = $conexion->prepare("SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal
     FROM proyecciones AS pr 
     INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula

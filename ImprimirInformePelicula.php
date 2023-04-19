@@ -3,9 +3,8 @@ require "Conexion.php";
 require "fpdf/fpdf.php";
 
 
-//Sentencia para seleccionar informes de peliculas
-$sentenciaSQL = $conexion->prepare("SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio,habilitada FROM peliculas 
-Where habilitada like 'Si'");
+//Sentencia para mostrar todas las peliculas (las que estan actualmente y las que no)
+$sentenciaSQL = $conexion->prepare("SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio,habilitada FROM peliculas");
 $sentenciaSQL->execute();
 $listaPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 

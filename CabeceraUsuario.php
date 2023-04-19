@@ -1,7 +1,7 @@
 <?php
 
  session_start();
-
+//Corrabora si el estatus es usuario, caso contrario vuelve al login
 if ($_SESSION['estatus']!="usuario"){
   header("location:Login.php");
 }

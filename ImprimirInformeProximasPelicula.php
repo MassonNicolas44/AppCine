@@ -2,10 +2,10 @@
 require "Conexion.php";
 require "fpdf/fpdf.php";
 
-
+//Sentencia para mostrar todas las proximas peliculas (las que estan actualmente y las que no)
 $sentenciaSQL = $conexion->prepare("SELECT * FROM ProximasPeliculas");
 $sentenciaSQL->execute();
-$listaPeliculas2=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaProximasPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
 //Generar archivo PDF con el resultado del informe
 $pdf=new FPDF("P","mm","letter");
@@ -31,14 +31,14 @@ $pdf->Cell(25,10,"Estreno",1,1,"C");
 $pdf->SetFont("Arial","",12);
 
 //Codigo para recorrer la lista desde la Base de Datos y mostrarlo en las columnas/filas indicadas
-foreach($listaPeliculas2 as $pelicula2){
-    $pdf->Cell(12,6,$pelicula2['IdPelicula'],1,0,"C");
-    $pdf->Cell(59,6,utf8_decode($pelicula2['titulo']),1,0,"C");
-    $pdf->Cell(25,6,$pelicula2['duracion']." Min",1,0,"C");
-    $pdf->Cell(22,6,utf8_decode($pelicula2['categoria']),1,0,"C");
-    $pdf->Cell(34,6,$pelicula2['restriccionEdad'],1,0,"C");
-    $pdf->Cell(12,6,$pelicula2['tipo'],1,0,"C");
-    $pdf->Cell(25,6,$pelicula2['fechaEstreno'],1,1,"C");
+foreach($listaProximasPeliculas as $ProximaPelicula){
+    $pdf->Cell(12,6,$ProximaPelicula['IdPelicula'],1,0,"C");
+    $pdf->Cell(59,6,utf8_decode($ProximaPelicula['titulo']),1,0,"C");
+    $pdf->Cell(25,6,$ProximaPelicula['duracion']." Min",1,0,"C");
+    $pdf->Cell(22,6,utf8_decode($ProximaPelicula['categoria']),1,0,"C");
+    $pdf->Cell(34,6,$ProximaPelicula['restriccionEdad'],1,0,"C");
+    $pdf->Cell(12,6,$ProximaPelicula['tipo'],1,0,"C");
+    $pdf->Cell(25,6,$ProximaPelicula['fechaEstreno'],1,1,"C");
 }
 
 $pdf->Output();

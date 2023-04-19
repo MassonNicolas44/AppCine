@@ -1,7 +1,7 @@
 <?php
 
  session_start();
-
+//Corrabora si el estatus es Admin, caso contrario vuelve al login
 if ($_SESSION['estatus']!="admin"){
   header("location:Login.php");
 }
