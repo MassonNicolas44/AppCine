@@ -43,17 +43,14 @@ if (isset($_POST['registrar'])) {
         $ExisteEmail = true;
       }
     }
-revisar carteles de emergencia
+
     //En caso que exista el nombre de usuario y/o mail, mostrara un mensaje indicando que ya existe el usuario
     //Caso contrario se procede a insertar el usuario en la base de datos, con los datos correspondientes
     if ($ExisteUsuario == true) {
       echo "<script> alert('Ya existe un Usuario con este Nombre'); </script>";
-      echo "Ya existe un Usuario con este nombre";
     } elseif ($ExisteEmail == true) {
       echo "<script> alert('Ya existe un Usuario con este Email'); </script>";
-      echo "Ya existe un Usuario con este email";
     } elseif ($ExisteUsuario == false && $ExisteEmail == false) {
-
       //Sentencia para insertar un nuevo usuario a la base de datos desde Android
       $sentencia = "INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña,habilitado)
   VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia','Si')";

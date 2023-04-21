@@ -40,9 +40,7 @@ if (isset($_POST['ingresar'])) {
       $_SESSION['estatus'] = "admin";
       header("location:Peliculas.php");
     } else {
-      revisar el cartel de emergencia
       echo "<script> alert('Usuario No Encontrado'); </script>";
-      echo "Usuario No Encontrado";
     }
   } else {
     echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
