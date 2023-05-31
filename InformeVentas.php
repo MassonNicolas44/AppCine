@@ -1,6 +1,6 @@
 <?php
-include "Conexion.php";
-include "CabeceraAdministrador.php";
+require_once ("Include/Conexion.php");
+require_once "Include/Cabecera.php";
 
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
@@ -9,28 +9,33 @@ $rdgTipo = (isset($_POST['Tipo'])) ? $_POST['Tipo'] : "Ventas";
 
 //En caso de seleccionar "Ventas" // "Recaudacion" o "Boletos", va a traer la tabla correspondiente para luego ser cargada mas adelante
 if ($rdgTipo == "Ventas") {
-    $sentenciaSQL = $conexion->prepare("SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pe.habilitada
+
+    $Venta ="SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pe.habilitada
     FROM proyecciones AS pr 
     INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
     INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
-    ORDER BY pr.fechaPelicula");
-    $sentenciaSQL->execute();
-    $listaVentas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+    ORDER BY pr.fechaPelicula";
+    $listaVentas= mysqli_query($db,$Venta);
+
 } elseif ($rdgTipo == "Recaudacion") {
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
+
+    $Recaudacion ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     Group by pe.titulo
-    ORDER BY Recaudado desc");
-    $sentenciaSQL->execute();
-    $listaRecaudacion = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+    ORDER BY Recaudado desc";
+    $listaRecaudacion= mysqli_query($db,$Recaudacion);
+
+
 } elseif ($rdgTipo == "Boletos") {
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
+
+    $Boleto ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     Group by pe.titulo
-    ORDER BY TotalBoleto desc");
-    $sentenciaSQL->execute();
-    $listaBoletos = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+    ORDER BY TotalBoleto desc";
+    $listaBoleto= mysqli_query($db,$Boleto);
+    
 }
+
 
 //Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el correspondiente informe (teniendo en cuenta el rango de fecha)
 if (isset($_POST['SeleccionarFecha'])) {
@@ -128,28 +133,27 @@ if (isset($_POST['SeleccionarFecha'])) {
                         <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar Fecha</button>
                     </div>
 
+                    </br>
+                    <label> Lista de: </label>
+                    <div class="row">
+                        <div class="col">
 
-                    <div class="col">
-                        <div class="row">
-                            Ventas <input type="radio" <?php echo ($rdgTipo == "Ventas") ? "checked" : ""; ?> name="Tipo"
-                                value="Ventas">
-                        </div>
-                        <div class="row">
-                            Recaudacion <input type="radio" <?php echo ($rdgTipo == "Recaudacion") ? "checked" : ""; ?>
-                                name="Tipo" value="Recaudacion">
-                        </div>
-                        <div class="row">
-                            Boletos <input type="radio" <?php echo ($rdgTipo == "Boletos") ? "checked" : ""; ?>
-                                name="Tipo" value="Boletos">
+                            <button type="submit" name="ListaVenta" class="btn btn-info"> Ventas </button>
+                            <button type="submit" name="ListaRecaudacion" class="btn btn-info"> Recaudacion </button>
+                            <button type="submit" name="ListaBoletos" class="btn btn-info"> Boletos </button>
+                        
                         </div>
                     </div>
 
                     <br />
+                    <label> Imprimir Informe de: </label>
                     <div class="row">
                         <div class="col">
-                            <button type="submit" name="SeleccionarTipoInforme" class="btn btn-info">Seleccionar Tipo
-                                Informe</button>
-                            <button type="submit" name="ImprimirInforme" class="btn btn-info">Imprimir Informe</button>
+                            
+                            <button type="submit" name="InformeVenta" class="btn btn-info"> Ventas </button>
+                            <button type="submit" name="InformeRecaudacion" class="btn btn-info"> Recaudacion </button>
+                            <button type="submit" name="InformeBoletos" class="btn btn-info"> Boletos </button>
+                        
                         </div>
                     </div>
                 </form>
@@ -183,7 +187,8 @@ if (isset($_POST['SeleccionarFecha'])) {
                     </thead>
                     <tbody>
                         <?php
-                        //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
+
+;                        //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
                         foreach ($listaVentas as $Ventas) {
                             ?>
                             <tr>
@@ -293,7 +298,7 @@ if (isset($_POST['SeleccionarFecha'])) {
             <tbody>
                 <?php
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-                foreach ($listaBoletos as $Boletos) {
+                foreach ($listaBoleto as $Boletos) {
                     ?>
                     <tr>
                         <td>

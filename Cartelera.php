@@ -1,6 +1,6 @@
 <?php
-include("CabeceraUsuario.php");
-include("Conexion.php");
+require_once("Include/Conexion.php");
+require_once("Include/Cabecera.php");
 
 //Variables a utilizar
 $IdPelicula = (isset($_POST['idPelicula'])) ? $_POST['idPelicula'] : "";

@@ -1,5 +1,6 @@
 <?php
-include 'Conexion.php';
+require_once 'Include/Conexion.php';
+session_start();
 
 //Variables a Utilizar
 $usuario = (isset($_POST['usuario'])) ? $_POST['usuario'] : "";
@@ -9,44 +10,38 @@ $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 if (isset($_POST['ingresar'])) {
   if (isset($_POST["usuario"]) && !empty($_POST["usuario"]) && isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])) {
     //Consulta a la base de datos para verificar que el usuario esta habilitado
-    $sentencia = $conexion->prepare("SELECT IdUsuario,usuario,contraseña,habilitado FROM usuarios where habilitado like 'Si'");
-    $sentencia->execute();
-    $ListaUsuarios = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+    $sql ="SELECT IdUsuario,nombre,apellido,usuario,email,contraseña,habilitado,privilegio 
+    FROM usuarios 
+    WHERE habilitado like 'Si' AND
+    usuario='$usuario' AND contraseña='$contrasenia'";
+    $login= mysqli_query($db,$sql);
 
-    $ExisteUsuario = false;
-    $usuario2 = "";
-    $contrasenia2 = "";
+    $DatosUsuario=mysqli_fetch_assoc($login);
 
-    //Recorre los datos consultados anteriormente, verificando primero que los datos del usuario y la contrasenia correspondan con alguno
-    //De la base de datos, caso afirmativo, pasa a traer y guardar en variables los datos del usuario y el Id
-    foreach ($ListaUsuarios as $ListaUsuario) {
-      $usuario2 = $ListaUsuario['usuario'];
-      $contrasenia2 = $ListaUsuario['contraseña'];
-      if ($usuario == $usuario2 && $contrasenia == $contrasenia2) {
-        $ExisteUsuario = true;
+    if ($login=true && mysqli_num_rows($login)==1){
+
+      $_SESSION['IdUsuario'] = $DatosUsuario["IdUsuario"];
+      $_SESSION['NombreUsuario'] = $DatosUsuario["nombre"];
+      $_SESSION['ApellidoUsuario'] = $DatosUsuario["apellido"];
+      $_SESSION['Usuario'] = $DatosUsuario["usuario"];
+      $_SESSION['EmailUsuario'] = $DatosUsuario["email"];
+      $_SESSION['Privilegio'] = $DatosUsuario["privilegio"];
+  
+      if ($DatosUsuario["privilegio"]=="Usuario"){
+        header("location:Cartelera.php");
+      }elseif ($DatosUsuario["privilegio"]=="Administrador"){
+        header("location:Peliculas.php");
       }
-    }
 
-    session_start();
-    if ($ExisteUsuario == true) {
-      $IdUsuario = $ListaUsuario['IdUsuario'];
-      $_SESSION['estatus'] = "usuario";
-      $_SESSION['Usuario'] = "" . $usuario;
-      $_SESSION['IdUsuario'] = "" . $IdUsuario;
-      header("location:Cartelera.php");
-      //En caso que no se encuentre el usuario ni la contrasenia en la base de datos consultadas, se pregunta por un usuario y contrasenia
-      //En particular, caso afirmativo se denota que es el administrador, el cual pasa a su correspondiente pagina
-    } elseif (($_POST['usuario'] == "11") && ($_POST['contrasenia'] == "22")) {
-      $_SESSION['estatus'] = "admin";
-      header("location:Peliculas.php");
-    } else {
+    }else {
       echo "<script> alert('Usuario No Encontrado'); </script>";
     }
-  } else {
-    echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
-  }
-  //En caso de seleccionar registrar, se redirige a la pagina correspondiente
-} elseif (isset($_POST['registrar'])) {
+  } 
+
+} 
+
+//En caso de seleccionar registrar, se redirige a la pagina correspondiente
+if (isset($_POST['registrar'])) {
   header("location:RegistrarUsuario.php");
 }
 
