@@ -2,13 +2,17 @@
 require_once ("Include/Conexion.php");
 require_once "Include/Cabecera.php";
 
+session_start();
+
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
 $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
-$rdgTipo = (isset($_POST['Tipo'])) ? $_POST['Tipo'] : "Ventas";
+$TipoLista="";
+$url = 'http://' . $_SERVER['HTTP_HOST'] . "/GamesOfMovies";
 
-//En caso de seleccionar "Ventas" // "Recaudacion" o "Boletos", va a traer la tabla correspondiente para luego ser cargada mas adelante
-if ($rdgTipo == "Ventas") {
+
+if (isset($_POST['ListaVenta']) || $TipoLista=="" ) {
+    $TipoLista="Venta";
 
     $Venta ="SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pe.habilitada
     FROM proyecciones AS pr 
@@ -17,7 +21,8 @@ if ($rdgTipo == "Ventas") {
     ORDER BY pr.fechaPelicula";
     $listaVentas= mysqli_query($db,$Venta);
 
-} elseif ($rdgTipo == "Recaudacion") {
+}elseif (isset($_POST['ListaRecaudacion'])) {
+    $TipoLista="Recaudacion";
 
     $Recaudacion ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
@@ -25,20 +30,20 @@ if ($rdgTipo == "Ventas") {
     ORDER BY Recaudado desc";
     $listaRecaudacion= mysqli_query($db,$Recaudacion);
 
-
-} elseif ($rdgTipo == "Boletos") {
+}elseif (isset($_POST['ListaBoletos'])) {
+    $TipoLista="Boleto";
 
     $Boleto ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     Group by pe.titulo
     ORDER BY TotalBoleto desc";
     $listaBoleto= mysqli_query($db,$Boleto);
-    
-}
 
+}
 
 //Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el correspondiente informe (teniendo en cuenta el rango de fecha)
 if (isset($_POST['SeleccionarFecha'])) {
+
     if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
         $txtFechaInicio = $_POST['txtFechaInicio'];
         $txtFechaFin = $_POST['txtFechaFin'];
@@ -49,22 +54,12 @@ if (isset($_POST['SeleccionarFecha'])) {
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
 
-} elseif (isset($_POST['ImprimirInforme'])) {
-    if ($rdgTipo == "Ventas") {
-        header("Location:ImprimirInformeVentas.php");
-    } elseif ($rdgTipo == "Recaudacion") {
-        header("Location:ImprimirInformeRecaudacion.php");
-    } elseif ($rdgTipo == "Boletos") {
-        header("Location:ImprimirInformeBoletos.php");
-    }
 } elseif (isset($_POST['CancelarFecha'])) {
     $txtFechaInicio = "";
     $txtFechaFin = "";
-    session_start();
+
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
-} else {
-
 }
 
 ?>
@@ -72,11 +67,11 @@ if (isset($_POST['SeleccionarFecha'])) {
 <div class="container">
     <br />
     <div class="card">
-        <?php if ($rdgTipo == "Ventas") { ?>
+        <?php if ($TipoLista == "Venta") { ?>
             <div class="card-header"><em>Informe de Ventas</em></div>
-        <?php } elseif ($rdgTipo == "Recaudacion") { ?>
+        <?php } elseif ($TipoLista == "Recaudacion") { ?>
             <div class="card-header"><em>Informe de Recaudacion</em></div>
-        <?php } elseif ($rdgTipo == "Boletos") { ?>
+        <?php } elseif ($TipoLista == "Boleto") { ?>
             <div class="card-header"><em>Informe de Boletos</em></div>
         <?php }
         ; ?>
@@ -149,10 +144,12 @@ if (isset($_POST['SeleccionarFecha'])) {
                     <label> Imprimir Informe de: </label>
                     <div class="row">
                         <div class="col">
-                            
-                            <button type="submit" name="InformeVenta" class="btn btn-info"> Ventas </button>
-                            <button type="submit" name="InformeRecaudacion" class="btn btn-info"> Recaudacion </button>
-                            <button type="submit" name="InformeBoletos" class="btn btn-info"> Boletos </button>
+                            <?php
+                                      
+                        ?>
+                            <a  href="<?php echo $url; ?>/Imprimir/Ventas.php" class="btn btn-info" target='_blank'> Ventas </a>
+                            <a  href="<?php echo $url; ?>/Imprimir/Recaudacion.php" class="btn btn-info" target='_blank'> Recaudacion </a>
+                            <a  href="<?php echo $url; ?>/Imprimir/Boletos.php" class="btn btn-info" target='_blank'> Boletos </a>
                         
                         </div>
                     </div>
@@ -169,7 +166,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
         <?php
         //Caso en el cual se seleccionan para ver las ventas por peliculas
-        if ($rdgTipo == "Ventas") {
+        if ($TipoLista == "Venta") {
             ?>
             <div class="card-header"><em>Ventas</em></div>
             <div class="card-body">
@@ -224,7 +221,7 @@ if (isset($_POST['SeleccionarFecha'])) {
         </div>
         <?php
             //Caso en el cual se seleccionan para ver las recaudaciones de las Peliculas
-        } elseif ($rdgTipo == "Recaudacion") {
+        } elseif ($TipoLista == "Recaudacion") {
             ?>
 
         <div class="card-header"><em>Recaudacion</em></div>
@@ -279,7 +276,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
     <?php
             //Caso en el cual se seleccionan para ver los boletos de las Peliculas
-        } elseif ($rdgTipo == "Boletos") {
+        } elseif ($TipoLista == "Boleto") {
             ?>
     <div class="card-header"><em>Boletos</em></div>
     <div class="card-body">

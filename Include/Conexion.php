@@ -11,6 +11,7 @@ try {
 } catch (Exception $ex) {
 	echo $ex->getMessage();
 }
+
 //Para casos especiales con Ñ o comillas
 mysqli_query($db,"SET NAMES 'utf8'");
 

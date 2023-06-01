@@ -1,6 +1,6 @@
 <?php
-require "Conexion.php";
-require "fpdf/fpdf.php";
+require_once "../Include/Conexion.php";
+require_once "../fpdf/fpdf.php";
 
 session_start();
 
@@ -10,23 +10,26 @@ if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
     $FechaFin = date("d-m-Y", strtotime($_SESSION['txtFechaFin']));
 }
 
-//Sentencia para ranking de peliculas ordenada por mayor recaudacion
-//Condicional donde si no se selecciona un rango de fechas, se muestran todos las recaudaciones en general
+//Sentencia para ranking de peliculas ordenada por mayor cantidad de boletos
+//Condicional donde si no se selecciona un rango de fechas, se muestran todos los boletos en general
 if (!empty($FechaInicio) && !empty($FechaFin)) {
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
+
+    $InformeBoletos ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
     ON pe.IdPelicula=pr.IdPelicula 
     WHERE pr.fechaPelicula BETWEEN '$FechaInicio' AND '$FechaFin'
     Group by pe.titulo
-    ORDER BY Recaudado desc");
+    ORDER BY TotalBoleto desc";
+
 } else {
-    $sentenciaSQL = $conexion->prepare("SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
-ON pe.IdPelicula=pr.IdPelicula 
-Group by pe.titulo
-ORDER BY Recaudado desc");
+
+    $InformeBoletos ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
+    ON pe.IdPelicula=pr.IdPelicula 
+    Group by pe.titulo
+    ORDER BY TotalBoleto desc";
+
 }
 
-$sentenciaSQL->execute();
-$listaRecaudacion = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaBoletos= mysqli_query($db,$InformeBoletos);
 
 //Generar archivo PDF con el resultado del informe
 $pdf = new FPDF("P", "mm", "letter");
@@ -34,7 +37,7 @@ $pdf->SetMargins(10, 10, 10);
 $pdf->AddPage();
 $pdf->SetFont("Arial", "B", 16);
 $pdf->Cell(35);
-$pdf->Multicell(100, 8.5, "Informe de Ranking de Peliculas con mas Recaudacion", 0, "C");
+$pdf->Multicell(100, 8.5, "Informe de Ranking de Peliculas con mas Boletos", 0, "C");
 $x = $pdf->GetX();
 $y = $pdf->GetY();
 $pdf->SetXY($x + 160, $y - 17);
@@ -65,14 +68,14 @@ $pdf->SetXY($x, $y);
 $pdf->SetFont("Arial", "", 12);
 
 //Codigo para recorrer la lista desde la Base de Datos y mostrarlo en las columnas/filas indicadas
-foreach ($listaRecaudacion as $Recaudacion) {
-    $pdf->Cell(15, 6, $Recaudacion['IdPelicula'], 1, 0, "C");
-    $pdf->Cell(64, 6, utf8_decode($Recaudacion['titulo']), 1, 0, "C");
-    $pdf->Cell(24, 6, utf8_decode($Recaudacion['categoria']), 1, 0, "C");
-    $pdf->Cell(17, 6, $Recaudacion['tipo'], 1, 0, "C");
-    $pdf->Cell(20, 6, $Recaudacion['habilitada'], 1, 0, "C");
-    $pdf->Cell(22, 6, $Recaudacion['TotalBoleto'], 1, 0, "C");
-    $pdf->Cell(27, 6, $Recaudacion['Recaudado'] . " $", 1, 1, "C");
+foreach ($listaBoletos as $Boletos) {
+    $pdf->Cell(15, 6, $Boletos['IdPelicula'], 1, 0, "C");
+    $pdf->Cell(64, 6, $Boletos['titulo'], 1, 0, "C");
+    $pdf->Cell(24, 6, $Boletos['categoria'], 1, 0, "C");
+    $pdf->Cell(17, 6, $Boletos['tipo'], 1, 0, "C");
+    $pdf->Cell(20, 6, $Boletos['habilitada'], 1, 0, "C");
+    $pdf->Cell(22, 6, $Boletos['TotalBoleto'], 1, 0, "C");
+    $pdf->Cell(27, 6, $Boletos['Recaudado'] . " $", 1, 1, "C");
 }
 
 $pdf->Output();
