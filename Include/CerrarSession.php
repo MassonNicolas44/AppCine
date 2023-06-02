@@ -1,6 +1,6 @@
 <?php
-    //Codigo para iniciar la Session y destruirla, luego envia al login
-    session_start();
+//Codigo para iniciar la Session y destruirla, luego envia al login
+session_start();
 
 
 unset($_SESSION['IdUsuario']);
@@ -9,7 +9,10 @@ unset($_SESSION['ApellidoUsuario']);
 unset($_SESSION['Usuario']);
 unset($_SESSION['EmailUsuario']);
 unset($_SESSION['Privilegio']);
+unset($_SESSION['TipoListaPelicula']);
+unset($_SESSION['TipoLista']);
+unset($_SESSION['url']);
 
-    session_destroy();
-    header("location:../login.php");
+session_destroy();
+header("location:../login.php");
 ?>

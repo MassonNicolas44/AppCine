@@ -3,7 +3,7 @@
 session_start();
 
 //Corrabora si el estatus es Admin, caso contrario vuelve al login
-if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != "Usuario") ) {
+if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != "Usuario")) {
   header("location:Login.php");
 }
 
@@ -27,22 +27,23 @@ if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != 
   <nav class="navbar navbar-expand -lg navbar-dark bg-primary">
     <div class="nav navbar-nav">
 
-        <?php if (($_SESSION['Privilegio'] == "Administrador")){ ?>
+      <?php if (($_SESSION['Privilegio'] == "Administrador")) { ?>
 
-      <a class="nav-item nav-link" href="<?php echo $url; ?>/Peliculas.php"> Administrar Peliculas |֎|</a>
-      <a class="nav-item nav-link" href="<?php echo $url; ?>/InformeUsuarios.php"> Administrar Usuarios |֎|</a>
-      <a class="nav-item nav-link" href="<?php echo $url; ?>/InformePeliculas.php"> Informe de Peliculas |֎|</a>
-      <a class="nav-item nav-link" href="<?php echo $url; ?>/InformeVentas.php"> Informe Adicional de Peliculas |֎|</a>
-      <a class="nav-item nav-link" href="<?php echo $url; ?>/Include/CerrarSession.php">Cerrar Sesion |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Peliculas.php"> Administrar Peliculas |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/InformeUsuarios.php"> Administrar Usuarios |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/InformePeliculas.php"> Informe de Peliculas |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/InformeVentas.php"> Informe Adicional de Peliculas |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Include/CerrarSession.php">Cerrar Sesion |֎|</a>
 
-      <?php }elseif ($_SESSION['Privilegio'] == "Usuario"){ ?>
+      <?php } elseif ($_SESSION['Privilegio'] == "Usuario") { ?>
 
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Cartelera.php"> Cartelera |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/ProximaCartelera.php"> Proximas Peliculas |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/AnularBoleto.php"> Anular Boleto |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Include/CerrarSession.php">Cerrar Sesion |֎|</a>
-      
-      <?php };?>
+
+      <?php }
+      ; ?>
 
     </div>
   </nav>

@@ -1,6 +1,7 @@
 <?php
 
 require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
 require_once "../fpdf/fpdf.php";
 
 session_start();
@@ -11,29 +12,17 @@ if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
     $FechaFin = date("d-m-Y", strtotime($_SESSION['txtFechaFin']));
 }
 
-
 //Sentencia para recuperar la cantidad de ventas por cada pelicula
 //Condicional donde si no se selecciona un rango de fechas, se muestran todos los boletos en general
 if (!empty($FechaInicio) && !empty($FechaFin)) {
 
-    $InformeVenta ="SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal
-    FROM proyecciones AS pr 
-    INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
-    INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
-    WHERE pr.fechaPelicula BETWEEN '$FechaInicio' AND '$FechaFin'
-    ORDER BY pr.fechaPelicula";
+    $listaVentas = ListaVentas($db, $FechaInicio, $FechaFin);
 
 } else {
 
-    $InformeVenta ="SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal
-    FROM proyecciones AS pr 
-    INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
-    INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
-    ORDER BY pr.fechaPelicula";
+    $listaVentas = ListaVentas($db);
 
 }
-
-$listaVentas= mysqli_query($db,$InformeVenta);
 
 
 //Generar archivo PDF con el resultado del informe

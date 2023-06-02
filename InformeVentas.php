@@ -1,43 +1,46 @@
 <?php
-require_once ("Include/Conexion.php");
+require_once "Include/Conexion.php";
 require_once "Include/Cabecera.php";
-
-session_start();
+require_once "Include/Funciones.php";
 
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
 $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
-$TipoLista="";
-$url = 'http://' . $_SERVER['HTTP_HOST'] . "/GamesOfMovies";
 
 
-if (isset($_POST['ListaVenta']) || $TipoLista=="" ) {
-    $TipoLista="Venta";
 
-    $Venta ="SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pe.habilitada
-    FROM proyecciones AS pr 
-    INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
-    INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
-    ORDER BY pr.fechaPelicula";
-    $listaVentas= mysqli_query($db,$Venta);
+if ((empty($_SESSION['TipoLista'])) || ($_SESSION['TipoLista'] == "Venta")) {
 
-}elseif (isset($_POST['ListaRecaudacion'])) {
-    $TipoLista="Recaudacion";
+    $_SESSION['TipoLista'] = "Venta";
+    $listaVentas = ListaVentas($db);
 
-    $Recaudacion ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
-    ON pe.IdPelicula=pr.IdPelicula 
-    Group by pe.titulo
-    ORDER BY Recaudado desc";
-    $listaRecaudacion= mysqli_query($db,$Recaudacion);
+} elseif (($_SESSION['TipoLista'] == "Recaudacion")) {
 
-}elseif (isset($_POST['ListaBoletos'])) {
-    $TipoLista="Boleto";
+    $_SESSION['TipoLista'] = "Recaudacion";
+    $listaRecaudacion = ListaRecaudacion($db);
 
-    $Boleto ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
-    ON pe.IdPelicula=pr.IdPelicula 
-    Group by pe.titulo
-    ORDER BY TotalBoleto desc";
-    $listaBoleto= mysqli_query($db,$Boleto);
+} elseif ($_SESSION['TipoLista'] == "Boleto") {
+
+    $_SESSION['TipoLista'] = "Boleto";
+    $listaBoleto = ListaBoletos($db);
+
+}
+
+
+if (isset($_POST['ListaVenta'])) {
+
+    $_SESSION['TipoLista'] = "Venta";
+    $listaVentas = ListaVentas($db);
+
+} elseif (isset($_POST['ListaRecaudacion'])) {
+
+    $_SESSION['TipoLista'] = "Recaudacion";
+    $listaRecaudacion = ListaRecaudacion($db);
+
+} elseif (isset($_POST['ListaBoletos'])) {
+
+    $_SESSION['TipoLista'] = "Boleto";
+    $listaBoleto = ListaBoletos($db);
 
 }
 
@@ -45,12 +48,15 @@ if (isset($_POST['ListaVenta']) || $TipoLista=="" ) {
 if (isset($_POST['SeleccionarFecha'])) {
 
     if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
-        $txtFechaInicio = $_POST['txtFechaInicio'];
-        $txtFechaFin = $_POST['txtFechaFin'];
+
+        $txtFechaInicio = date("d-m-Y", strtotime($_POST['txtFechaInicio']));
+        $txtFechaFin = date("d-m-Y", strtotime($_POST['txtFechaFin']));
+
     } else {
         $txtFechaInicio = "";
         $txtFechaFin = "";
     }
+
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
 
@@ -60,18 +66,20 @@ if (isset($_POST['SeleccionarFecha'])) {
 
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
+
 }
+
 
 ?>
 
 <div class="container">
     <br />
     <div class="card">
-        <?php if ($TipoLista == "Venta") { ?>
+        <?php if ($_SESSION['TipoLista'] == "Venta") { ?>
             <div class="card-header"><em>Informe de Ventas</em></div>
-        <?php } elseif ($TipoLista == "Recaudacion") { ?>
+        <?php } elseif ($_SESSION['TipoLista'] == "Recaudacion") { ?>
             <div class="card-header"><em>Informe de Recaudacion</em></div>
-        <?php } elseif ($TipoLista == "Boleto") { ?>
+        <?php } elseif ($_SESSION['TipoLista'] == "Boleto") { ?>
             <div class="card-header"><em>Informe de Boletos</em></div>
         <?php }
         ; ?>
@@ -107,53 +115,66 @@ if (isset($_POST['SeleccionarFecha'])) {
                     }
                     ?>
                 </div>
-                <form action="InformeVentas.php" method="post">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label> <ins> Fecha Inicio:</ins></label>
-                            <input type="date" class="form-control" value="<?php echo $txtFechaInicio ?>"
-                                name="txtFechaInicio">
-                        </div>
-                        <div class="col-md-3">
-                            <label><ins> Fecha Fin:</ins></label>
-                            <input type="date" class="form-control" value="<?php echo $txtFechaFin ?>"
-                                name="txtFechaFin">
 
-                        </div>
+
+                <?php
+                if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
+                    $MostrarFechaInicio = date("Y-m-d", strtotime($txtFechaInicio));
+                    $MostrarFechaFin = date("Y-m-d", strtotime($txtFechaFin));
+                }
+
+
+                ?>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <label> <ins> Fecha Inicio:</ins></label>
+                        <input type="date" class="form-control" value="<?php echo $MostrarFechaInicio ?>"
+                            name="txtFechaInicio">
+                    </div>
+                    <div class="col-md-3">
+                        <label><ins> Fecha Fin:</ins></label>
+                        <input type="date" class="form-control" value="<?php echo $MostrarFechaFin ?>"
+                            name="txtFechaFin">
 
                     </div>
-                    </br>
+
+                </div>
+                </br>
+                <div class="col">
+                    <button type="submit" name="SeleccionarFecha" class="btn btn-success">Seleccionar Fecha</button>
+                    <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar Fecha</button>
+                </div>
+
+                </br>
+                <label> Lista de: </label>
+                <div class="row">
                     <div class="col">
-                        <button type="submit" name="SeleccionarFecha" class="btn btn-success">Seleccionar Fecha</button>
-                        <button type="submit" name="CancelarFecha" class="btn btn-warning">Cancelar Fecha</button>
+
+                        <button type="submit" name="ListaVenta" class="btn btn-info"> Ventas </button>
+                        <button type="submit" name="ListaRecaudacion" class="btn btn-info"> Recaudacion </button>
+                        <button type="submit" name="ListaBoletos" class="btn btn-info"> Boletos </button>
+
                     </div>
+                </div>
 
-                    </br>
-                    <label> Lista de: </label>
-                    <div class="row">
-                        <div class="col">
+                <br />
+                <label> Imprimir Informe de: </label>
+                <div class="row">
+                    <div class="col">
+                        <?php
 
-                            <button type="submit" name="ListaVenta" class="btn btn-info"> Ventas </button>
-                            <button type="submit" name="ListaRecaudacion" class="btn btn-info"> Recaudacion </button>
-                            <button type="submit" name="ListaBoletos" class="btn btn-info"> Boletos </button>
-                        
-                        </div>
-                    </div>
-
-                    <br />
-                    <label> Imprimir Informe de: </label>
-                    <div class="row">
-                        <div class="col">
-                            <?php
-                                      
                         ?>
-                            <a  href="<?php echo $url; ?>/Imprimir/Ventas.php" class="btn btn-info" target='_blank'> Ventas </a>
-                            <a  href="<?php echo $url; ?>/Imprimir/Recaudacion.php" class="btn btn-info" target='_blank'> Recaudacion </a>
-                            <a  href="<?php echo $url; ?>/Imprimir/Boletos.php" class="btn btn-info" target='_blank'> Boletos </a>
-                        
-                        </div>
+                        <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Ventas.php" class="btn btn-info"
+                            target='_blank'> Ventas </a>
+                        <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Recaudacion.php" class="btn btn-info"
+                            target='_blank'> Recaudacion </a>
+                        <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Boletos.php" class="btn btn-info"
+                            target='_blank'> Boletos </a>
+
                     </div>
-                </form>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -166,7 +187,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
         <?php
         //Caso en el cual se seleccionan para ver las ventas por peliculas
-        if ($TipoLista == "Venta") {
+        if ($_SESSION['TipoLista'] == "Venta") {
             ?>
             <div class="card-header"><em>Ventas</em></div>
             <div class="card-body">
@@ -185,7 +206,7 @@ if (isset($_POST['SeleccionarFecha'])) {
                     <tbody>
                         <?php
 
-;                        //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
+                        ; //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
                         foreach ($listaVentas as $Ventas) {
                             ?>
                             <tr>
@@ -221,7 +242,7 @@ if (isset($_POST['SeleccionarFecha'])) {
         </div>
         <?php
             //Caso en el cual se seleccionan para ver las recaudaciones de las Peliculas
-        } elseif ($TipoLista == "Recaudacion") {
+        } elseif ($_SESSION['TipoLista'] == "Recaudacion") {
             ?>
 
         <div class="card-header"><em>Recaudacion</em></div>
@@ -276,7 +297,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
     <?php
             //Caso en el cual se seleccionan para ver los boletos de las Peliculas
-        } elseif ($TipoLista == "Boleto") {
+        } elseif ($_SESSION['TipoLista'] == "Boleto") {
             ?>
     <div class="card-header"><em>Boletos</em></div>
     <div class="card-body">

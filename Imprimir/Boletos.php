@@ -1,5 +1,6 @@
 <?php
 require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
 require_once "../fpdf/fpdf.php";
 
 session_start();
@@ -14,22 +15,13 @@ if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
 //Condicional donde si no se selecciona un rango de fechas, se muestran todos los boletos en general
 if (!empty($FechaInicio) && !empty($FechaFin)) {
 
-    $InformeBoletos ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
-    ON pe.IdPelicula=pr.IdPelicula 
-    WHERE pr.fechaPelicula BETWEEN '$FechaInicio' AND '$FechaFin'
-    Group by pe.titulo
-    ORDER BY TotalBoleto desc";
+    $listaBoletos = ListaBoletos($db, $FechaInicio, $FechaFin);
 
 } else {
 
-    $InformeBoletos ="SELECT pe.IdPelicula,pe.titulo,pe.duracion,pe.categoria,pe.tipo,Sum(pr.precioFinal) AS Recaudado,Sum(CantBoleto) AS TotalBoleto, pe.habilitada FROM proyecciones AS pr INNER JOIN peliculas AS pe
-    ON pe.IdPelicula=pr.IdPelicula 
-    Group by pe.titulo
-    ORDER BY TotalBoleto desc";
+    $listaBoletos = ListaBoletos($db);
 
 }
-
-$listaBoletos= mysqli_query($db,$InformeBoletos);
 
 //Generar archivo PDF con el resultado del informe
 $pdf = new FPDF("P", "mm", "letter");
