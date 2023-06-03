@@ -9,8 +9,8 @@ unset($_SESSION['ApellidoUsuario']);
 unset($_SESSION['Usuario']);
 unset($_SESSION['EmailUsuario']);
 unset($_SESSION['Privilegio']);
-unset($_SESSION['TipoListaPelicula']);
-unset($_SESSION['TipoLista']);
+unset($_SESSION['TipoListaAdministrativo']);
+unset($_SESSION['TipoListaInforme']);
 unset($_SESSION['url']);
 
 session_destroy();

@@ -9,19 +9,19 @@ $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
 
 
 
-if ((empty($_SESSION['TipoLista'])) || ($_SESSION['TipoLista'] == "Venta")) {
+if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == "Venta")) {
 
-    $_SESSION['TipoLista'] = "Venta";
+    $_SESSION['TipoListaInforme'] = "Venta";
     $listaVentas = ListaVentas($db);
 
-} elseif (($_SESSION['TipoLista'] == "Recaudacion")) {
+} elseif (($_SESSION['TipoListaInforme'] == "Recaudacion")) {
 
-    $_SESSION['TipoLista'] = "Recaudacion";
+    $_SESSION['TipoListaInforme'] = "Recaudacion";
     $listaRecaudacion = ListaRecaudacion($db);
 
-} elseif ($_SESSION['TipoLista'] == "Boleto") {
+} elseif ($_SESSION['TipoListaInforme'] == "Boleto") {
 
-    $_SESSION['TipoLista'] = "Boleto";
+    $_SESSION['TipoListaInforme'] = "Boleto";
     $listaBoleto = ListaBoletos($db);
 
 }
@@ -29,17 +29,17 @@ if ((empty($_SESSION['TipoLista'])) || ($_SESSION['TipoLista'] == "Venta")) {
 
 if (isset($_POST['ListaVenta'])) {
 
-    $_SESSION['TipoLista'] = "Venta";
+    $_SESSION['TipoListaInforme'] = "Venta";
     $listaVentas = ListaVentas($db);
 
 } elseif (isset($_POST['ListaRecaudacion'])) {
 
-    $_SESSION['TipoLista'] = "Recaudacion";
+    $_SESSION['TipoListaInforme'] = "Recaudacion";
     $listaRecaudacion = ListaRecaudacion($db);
 
 } elseif (isset($_POST['ListaBoletos'])) {
 
-    $_SESSION['TipoLista'] = "Boleto";
+    $_SESSION['TipoListaInforme'] = "Boleto";
     $listaBoleto = ListaBoletos($db);
 
 }
@@ -75,11 +75,11 @@ if (isset($_POST['SeleccionarFecha'])) {
 <div class="container">
     <br />
     <div class="card">
-        <?php if ($_SESSION['TipoLista'] == "Venta") { ?>
+        <?php if ($_SESSION['TipoListaInforme'] == "Venta") { ?>
             <div class="card-header"><em>Informe de Ventas</em></div>
-        <?php } elseif ($_SESSION['TipoLista'] == "Recaudacion") { ?>
+        <?php } elseif ($_SESSION['TipoListaInforme'] == "Recaudacion") { ?>
             <div class="card-header"><em>Informe de Recaudacion</em></div>
-        <?php } elseif ($_SESSION['TipoLista'] == "Boleto") { ?>
+        <?php } elseif ($_SESSION['TipoListaInforme'] == "Boleto") { ?>
             <div class="card-header"><em>Informe de Boletos</em></div>
         <?php }
         ; ?>
@@ -187,7 +187,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
         <?php
         //Caso en el cual se seleccionan para ver las ventas por peliculas
-        if ($_SESSION['TipoLista'] == "Venta") {
+        if ($_SESSION['TipoListaInforme'] == "Venta") {
             ?>
             <div class="card-header"><em>Ventas</em></div>
             <div class="card-body">
@@ -242,7 +242,7 @@ if (isset($_POST['SeleccionarFecha'])) {
         </div>
         <?php
             //Caso en el cual se seleccionan para ver las recaudaciones de las Peliculas
-        } elseif ($_SESSION['TipoLista'] == "Recaudacion") {
+        } elseif ($_SESSION['TipoListaInforme'] == "Recaudacion") {
             ?>
 
         <div class="card-header"><em>Recaudacion</em></div>
@@ -297,7 +297,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
     <?php
             //Caso en el cual se seleccionan para ver los boletos de las Peliculas
-        } elseif ($_SESSION['TipoLista'] == "Boleto") {
+        } elseif ($_SESSION['TipoListaInforme'] == "Boleto") {
             ?>
     <div class="card-header"><em>Boletos</em></div>
     <div class="card-body">

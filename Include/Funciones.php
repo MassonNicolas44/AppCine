@@ -1,8 +1,37 @@
 <?php
 
 
-function ListaPeliculas($db)
+function ListaUsuarios($db){
+
+$Usuarios= "SELECT * FROM usuarios WHERE privilegio LIKE 'Usuario'";
+
+$listaUsuarios=mysqli_query($db,$Usuarios);
+
+return $listaUsuarios;
+
+}
+
+function AccionUsuario($db, $habilitada = null, $noHabilitada = null, $idUsuario = null)
 {
+
+  if (!empty($habilitada)) {
+
+    $sql = "UPDATE usuarios SET habilitado='$habilitada' WHERE idUsuario='$idUsuario'";
+
+  } elseif (!empty($noHabilitada)) {
+
+    $sql = "UPDATE usuarios SET habilitado='$noHabilitada' WHERE idUsuario='$idUsuario'";
+
+  }
+
+  mysqli_query($db, $sql);
+
+  header("Location:InformeUsuarios.php");
+
+}
+
+
+function ListaPeliculas($db){
 
   $Peliculas = "SELECT * FROM peliculas";
 
@@ -23,7 +52,7 @@ function ListaProximasPeliculas($db)
 
 }
 
-function asd($db, $habilitada = null, $noHabilitada = null, $idPelicula = null, $IdProximasPelicula = null)
+function AccionPelicula($db, $habilitada = null, $noHabilitada = null, $idPelicula = null, $IdProximasPelicula = null)
 {
 
   if (!empty($habilitada) && (!empty($idPelicula))) {

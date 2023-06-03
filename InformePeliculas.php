@@ -8,14 +8,14 @@ require_once "Include/Cabecera.php";
 $IdPelicula = (isset($_POST['idPelicula'])) ? $_POST['idPelicula'] : "";
 $IdProximasPelicula = (isset($_POST['idProximasPelicula'])) ? $_POST['idProximasPelicula'] : "";
 
-if (empty($_SESSION['TipoListaPelicula']) || ($_SESSION['TipoListaPelicula'] == "Peliculas")) {
+if (empty($_SESSION['TipoListaAdministrativo']) || ($_SESSION['TipoListaAdministrativo'] == "Peliculas")) {
 
-    $_SESSION['TipoListaPelicula'] = "Peliculas";
+    $_SESSION['TipoListaAdministrativo'] = "Peliculas";
     $listaPeliculas = ListaPeliculas($db);
 
-} elseif ($_SESSION['TipoListaPelicula'] == "ProximasPeliculas") {
+} elseif ($_SESSION['TipoListaAdministrativo'] == "ProximasPeliculas") {
 
-    $_SESSION['TipoListaPelicula'] = "ProximasPeliculas";
+    $_SESSION['TipoListaAdministrativo'] = "ProximasPeliculas";
     $listaProximaPeliculas = ListaProximasPeliculas($db);
 
 }
@@ -23,12 +23,12 @@ if (empty($_SESSION['TipoListaPelicula']) || ($_SESSION['TipoListaPelicula'] == 
 //En caso de seleccionar "Peliculas" o "ProximasPeliculas", va a traer la tabla correspondiente para luego ser cargada mas adelante
 if (isset($_POST['Peliculas'])) {
 
-    $_SESSION['TipoListaPelicula'] = "Peliculas";
+    $_SESSION['TipoListaAdministrativo'] = "Peliculas";
     $listaPeliculas = ListaPeliculas($db);
 
 } elseif (isset($_POST['ProximasPeliculas'])) {
 
-    $_SESSION['TipoListaPelicula'] = "ProximasPeliculas";
+    $_SESSION['TipoListaAdministrativo'] = "ProximasPeliculas";
     $listaProximaPeliculas = ListaProximasPeliculas($db);
 }
 
@@ -36,19 +36,19 @@ if (isset($_POST['Peliculas'])) {
 //En caso de de Habilitar o InhabilitarPelicula tanto Peliculas como ProximasPeliculas, se actualiza la columna con la tabla correspondiente
 if (isset($_POST['HabilitarPelicula'])) {
 
-    asd($db, 'Si', null, $IdPelicula, null);
+    AccionPelicula($db, 'Si', null, $IdPelicula, null);
 
 } elseif (isset($_POST['InhabilitarPelicula'])) {
 
-    asd($db, null, 'No', $IdPelicula, null);
+    AccionPelicula($db, null, 'No', $IdPelicula, null);
 
 } elseif (isset($_POST['HabilitarProximasPeliculas'])) {
 
-    asd($db, 'Si', null, null, $IdProximasPelicula);
+    AccionPelicula($db, 'Si', null, null, $IdProximasPelicula);
 
 } elseif (isset($_POST['InhabilitarProximasPeliculas'])) {
 
-    asd($db, null, 'No', null, $IdProximasPelicula);
+    AccionPelicula($db, null, 'No', null, $IdProximasPelicula);
 
 }
 
@@ -57,9 +57,9 @@ if (isset($_POST['HabilitarPelicula'])) {
 <br />
 <div class="container">
     <div class="card">
-        <?php if ($_SESSION['TipoListaPelicula'] == "Peliculas") { ?>
+        <?php if ($_SESSION['TipoListaAdministrativo'] == "Peliculas") { ?>
             <div class="card-header"><em>Informe de Peliculas</em></div>
-        <?php } elseif ($_SESSION['TipoListaPelicula'] == "ProximasPeliculas") { ?>
+        <?php } elseif ($_SESSION['TipoListaAdministrativo'] == "ProximasPeliculas") { ?>
             <div class="card-header"><em>Informe de Proximas Peliculas</em></div>
         <?php }
         ;
@@ -71,8 +71,7 @@ if (isset($_POST['HabilitarPelicula'])) {
                     <div class="col">
 
                         <button type="submit" name="Peliculas" class="btn btn-info"> Peliculas </button>
-                        <button type="submit" name="ProximasPeliculas" class="btn btn-info"> Proximas Peliculas
-                        </button>
+                        <button type="submit" name="ProximasPeliculas" class="btn btn-info"> Proximas Peliculas </button>   
 
                     </div>
                 </div>
@@ -103,7 +102,7 @@ if (isset($_POST['HabilitarPelicula'])) {
     <div class="card">
         <?php
         //Caso en el cual se seleccionan para ver Peliculas
-        if ($_SESSION['TipoListaPelicula'] == "Peliculas") {
+        if ($_SESSION['TipoListaAdministrativo'] == "Peliculas") {
             ?>
             <div class="card-header"><em>Peliculas</em></div>
             <div class="card-body">
@@ -179,7 +178,7 @@ if (isset($_POST['HabilitarPelicula'])) {
         </div>
         <?php
             //Caso en el cual se seleccionan para ver ProximasPeliculas
-        } elseif ($_SESSION['TipoListaPelicula'] == "ProximasPeliculas") {
+        } elseif ($_SESSION['TipoListaAdministrativo'] == "ProximasPeliculas") {
             ?>
         <div class="card-header"><em>Proximas Peliculas</em></div>
         <div class="card-body">

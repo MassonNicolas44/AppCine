@@ -1,47 +1,24 @@
 <?php
-include "Conexion.php";
-include "CabeceraAdministrador.php";
+require_once "Include/Conexion.php";
+require_once "Include/Funciones.php";
+require_once "Include/Cabecera.php";
 
 //Variables a utilizar
 $IdUsuario = (isset($_POST['idUsuario'])) ? $_POST['idUsuario'] : "";
-$txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
-$txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
-$Habilitacion = "Si";
-$anularHabilitacion = "No";
 
-//Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "usuarios") desde la web
-$sentenciaSQL = $conexion->prepare("SELECT * FROM usuarios");
-$sentenciaSQL->execute();
-$listaUsuarios = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
-//Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el informe (teniendo en cuenta el rango de fecha)
-if (isset($_POST['SeleccionarFecha'])) {
-    $txtFechaInicio = $_POST['txtFechaInicio'];
-    $txtFechaFin = $_POST['txtFechaFin'];
-} elseif (isset($_POST['ImprimirInforme'])) {
-    header("Location:ImprimirInformeUsuarios.php");
-} elseif (isset($_POST['CancelarFecha'])) {
-    $txtFechaInicio = "";
-    $txtFechaFin = "";
-    //Condicional: Habilitar o Inhabilitar el usuario 
-} elseif (isset($_POST['Habilitar'])) {
-    $sentenciaSQL = $conexion->prepare("UPDATE usuarios SET habilitado=:habilitado WHERE idUsuario=:idUsuario");
-    $sentenciaSQL->bindParam(':idUsuario', $IdUsuario);
-    $sentenciaSQL->bindParam(':habilitado', $Habilitacion);
-    $sentenciaSQL->execute();
-    header("Location:InformeUsuarios.php");
-} elseif (isset($_POST['Inhabilitar'])) {
-    $sentenciaSQL = $conexion->prepare("UPDATE usuarios SET habilitado=:habilitado WHERE idUsuario=:idUsuario");
-    $sentenciaSQL->bindParam(':idUsuario', $IdUsuario);
-    $sentenciaSQL->bindParam(':habilitado', $anularHabilitacion);
-    $sentenciaSQL->execute();
-    header("Location:InformeUsuarios.php");
-} else {
+$listaUsuarios=ListaUsuarios($db);
+
+
+if (isset($_POST['HabilitarUsuario'])) {
+
+    AccionUsuario($db, 'Si', null, $IdUsuario);
+
+} elseif (isset($_POST['InhabilitarUsuario'])) {
+
+    AccionUsuario($db, null, 'No', $IdUsuario);
 
 }
-
-
-
 
 ?>
 
@@ -100,9 +77,9 @@ if (isset($_POST['SeleccionarFecha'])) {
                                 <form method="post">
                                     <input type="hidden" name="idUsuario" IdUsuario="idUsuario"
                                         value="<?php echo $Usuarios['IdUsuario']; ?>">
-                                    <input type="submit" name="Habilitar" value="Habilitar" class="btn btn-primary"
+                                    <input type="submit" name="HabilitarUsuario" value="Habilitar" class="btn btn-primary"
                                         onclick="return confirmacionHabilitar()">
-                                    <input type="submit" name="Inhabilitar" value="Inhabilitar" class="btn btn-danger"
+                                    <input type="submit" name="InhabilitarUsuario" value="Inhabilitar" class="btn btn-danger"
                                         onclick="return confirmacionInhabilitar()">
                                 </form>
                             </td>
