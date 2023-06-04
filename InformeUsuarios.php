@@ -29,7 +29,7 @@ if (isset($_POST['HabilitarUsuario'])) {
         <div class="card-header"><em>Usuarios</em></div>
         <div class="card-header">
             <form action="InformeUsuarios.php" method="post">
-                <button type="submit" name="ImprimirInforme" class="btn btn-info">Imprimir Informe</button>
+            <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Usuarios.php" class="btn btn-info" target='_blank'> Peliculas </a>
             </form>
         </div>
         <div class="card-body">
@@ -75,12 +75,9 @@ if (isset($_POST['HabilitarUsuario'])) {
                             </td>
                             <td>
                                 <form method="post">
-                                    <input type="hidden" name="idUsuario" IdUsuario="idUsuario"
-                                        value="<?php echo $Usuarios['IdUsuario']; ?>">
-                                    <input type="submit" name="HabilitarUsuario" value="Habilitar" class="btn btn-primary"
-                                        onclick="return confirmacionHabilitar()">
-                                    <input type="submit" name="InhabilitarUsuario" value="Inhabilitar" class="btn btn-danger"
-                                        onclick="return confirmacionInhabilitar()">
+                                    <input type="hidden" name="idUsuario" IdUsuario="idUsuario" value="<?php echo $Usuarios['IdUsuario']; ?>">
+                                    <input type="submit" name="HabilitarUsuario" value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                    <input type="submit" name="InhabilitarUsuario" value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
                                 </form>
                             </td>
                         </tr>

@@ -1,11 +1,10 @@
 <?php
-require "Conexion.php";
-require "fpdf/fpdf.php";
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../fpdf/fpdf.php";
 
 //Sentencia para recuperar lista de usuarios desde base de datos
-$sentenciaSQL = $conexion->prepare("SELECT * FROM usuarios");
-$sentenciaSQL->execute();
-$listaUsuarios = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaUsuarios=ListaUsuarios($db);
 
 //Generar archivo PDF con el resultado del informe
 $pdf = new FPDF("P", "mm", "letter");

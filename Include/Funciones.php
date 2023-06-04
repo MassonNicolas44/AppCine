@@ -1,13 +1,19 @@
 <?php
 
+function Url($db){
+  mysqli_query($db, "SET NAMES 'utf8'");
+$_SESSION['url'] = 'http://' . $_SERVER['HTTP_HOST'] . "/GamesOfMovies";
 
-function ListaUsuarios($db){
+}
 
-$Usuarios= "SELECT * FROM usuarios WHERE privilegio LIKE 'Usuario'";
+function ListaUsuarios($db)
+{
 
-$listaUsuarios=mysqli_query($db,$Usuarios);
+  $Usuarios = "SELECT * FROM usuarios WHERE privilegio LIKE 'Usuario'";
 
-return $listaUsuarios;
+  $listaUsuarios = mysqli_query($db, $Usuarios);
+
+  return $listaUsuarios;
 
 }
 
@@ -31,24 +37,49 @@ function AccionUsuario($db, $habilitada = null, $noHabilitada = null, $idUsuario
 }
 
 
-function ListaPeliculas($db){
+function ListaPeliculas($db, $Valor=null, $txtID=null)
+{
 
-  $Peliculas = "SELECT * FROM peliculas";
+  if (!empty($txtID)) {
+    $Peliculas= "SELECT * FROM peliculas WHERE IdPelicula='$txtID'";
 
-  $listaPeliculas = mysqli_query($db, $Peliculas);
 
-  return $listaPeliculas;
+  } else {
+
+    if ($Valor == "RestriccionEdad") {
+      $Peliculas = "SELECT restriccionEdad FROM peliculas
+    GROUP BY restriccionEdad";
+    } elseif ($Valor == "Tipo") {
+      $Peliculas = "SELECT tipo FROM peliculas 
+  GROUP BY tipo";
+    } elseif ($Valor == "Lista" || empty($Valor)) {
+      $Peliculas = "SELECT * FROM peliculas";
+    }
+
+  }
+
+  $resultado = mysqli_query($db, $Peliculas);
+  return $resultado;
 
 }
 
-function ListaProximasPeliculas($db)
-{
 
-  $ProximasPeliculas = "SELECT * FROM proximaspeliculas";
 
-  $listaProximasPeliculas = mysqli_query($db, $ProximasPeliculas);
+function ListaProximasPeliculas($db, $Valor=null,$txtID=null){
 
-  return $listaProximasPeliculas;
+  if (!empty($txtID)) {
+    $ProximasPeliculas= "SELECT * FROM proximaspeliculas WHERE IdPelicula='$txtID'";
+  } else {
+
+  if ($Valor == "Titulo") {
+    $ProximasPeliculas = "SELECT titulo FROM proximaspeliculas";
+  } else {
+    $ProximasPeliculas = "SELECT * FROM proximaspeliculas";
+  }
+}
+  $resultado = mysqli_query($db, $ProximasPeliculas);
+
+  return $resultado;
 
 }
 

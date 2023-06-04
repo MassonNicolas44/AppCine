@@ -1,7 +1,9 @@
 <!-- Pagina -->
 <?php
-include("Include/Cabecera.php");
-include("Include/Conexion.php");
+
+require_once "Include/Conexion.php";
+require_once "Include/Funciones.php";
+require_once "Include/Cabecera.php";
 
 //Declaracion de variables para luego ser utilizadas en distintos procesos
 
@@ -38,7 +40,6 @@ switch ($accion) {
                 !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
                 !empty($txtFecha)
             ) {
-
                 $sentencia = $conexion->prepare("SELECT titulo FROM proximaspeliculas");
                 $sentencia->execute();
                 $peliculas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
@@ -224,35 +225,35 @@ switch ($accion) {
 
     case "Seleccionar":
         //Sentencia para recuperar la ID de la la tabla "pelicula" seleccionada desde la Web, para luego cargarla en los textview correspondientes
-        $sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE IdPelicula=:IdPelicula");
-        $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-        $sentenciaSQL->execute();
-        $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-        $txtTitulo = $peliculas['titulo'];
-        $txtDuracion = $peliculas['duracion'];
-        $txtrestriccionEdad = $peliculas['restriccionEdad'];
-        $txtCategoria = $peliculas['categoria'];
-        $txtTipo = $peliculas['tipo'];
-        $txtPrecio = $peliculas['precio'];
-        $txtDescripcion = $peliculas['descripcion'];
-        $txtImagen = $peliculas['imgResource'];
+        
+        $resultado=ListaPeliculas($db,"Seleccionar",$txtID);
+        $SeleccionPelicula = mysqli_fetch_assoc($resultado);
+
+        $txtTitulo = $SeleccionPelicula['titulo'];
+        $txtDuracion = $SeleccionPelicula['duracion'];
+        $txtrestriccionEdad = $SeleccionPelicula['restriccionEdad'];
+        $txtCategoria = $SeleccionPelicula['categoria'];
+        $txtTipo = $SeleccionPelicula['tipo'];
+        $txtPrecio = $SeleccionPelicula['precio'];
+        $txtDescripcion = $SeleccionPelicula['descripcion'];
+        $txtImagen = $SeleccionPelicula['imgResource'];
 
         $validarModificar = "Seleccionar";
         break;
 
     case "Seleccionar ProximaPelicula":
         //Sentencia para recuperar la ID de la tabla "proximaspeliculas" seleccionada desde la Web, para luego cargarla en los textview correspondientes
-        $sentenciaSQL = $conexion->prepare("SELECT * FROM proximaspeliculas WHERE IdPelicula=:IdPelicula");
-        $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-        $sentenciaSQL->execute();
-        $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-        $txtTitulo = $peliculas['titulo'];
-        $txtDuracion = $peliculas['duracion'];
-        $txtrestriccionEdad = $peliculas['restriccionEdad'];
-        $txtCategoria = $peliculas['categoria'];
-        $txtTipo = $peliculas['tipo'];
-        $txtImagen = $peliculas['imgResource'];
-        $txtFecha = $peliculas['fechaEstreno'];
+
+        $resultado=ListaProximasPeliculas($db,"Seleccionar",$txtID);
+        $SeleccionProximaPelicula = mysqli_fetch_assoc($resultado);
+
+        $txtTitulo = $SeleccionProximaPelicula['titulo'];
+        $txtDuracion = $SeleccionProximaPelicula['duracion'];
+        $txtrestriccionEdad = $SeleccionProximaPelicula['restriccionEdad'];
+        $txtCategoria = $SeleccionProximaPelicula['categoria'];
+        $txtTipo = $SeleccionProximaPelicula['tipo'];
+        $txtImagen = $SeleccionProximaPelicula['imgResource'];
+        $txtFecha = $SeleccionProximaPelicula['fechaEstreno'];
 
         $validarModificar = "SeleccionarProximaPelicula";
         break;
@@ -332,15 +333,7 @@ switch ($accion) {
 
 }
 
-//Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "peliculas") desde la web
-$sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas");
-$sentenciaSQL->execute();
-$listaPeliculas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
-
-//Sentencia para seleccionar todos los datos de una pelicula de la base de datos (tabla "proximaspeliculas") desde la web
-$sentenciaSQL2 = $conexion->prepare("SELECT * FROM proximaspeliculas");
-$sentenciaSQL2->execute();
-$listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
+ListaProximasPeliculas($db);
 
 ?>
 
@@ -378,61 +371,25 @@ $listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
                         <input type="number" class="form-control" value="<?php echo $txtDuracion ?>" name="txtDuracion"
                             placeholder="Ingresar duracion [Minutos]">
                     </div>
+
                     <div class="form-group">
                         <label>Restriccion Edad:</label>
                         <select name="txtrestriccionEdad">
 
                             <?php
-                            //Sentencia para seleccionar los datos de la variables "restriccionEdad" teniendo en cuenta el IdPelicula seleccionado, para setear las opciones del ComboBox restriccionEdad
-                            $sentenciaSQL = $conexion->prepare("SELECT restriccionEdad FROM peliculas WHERE IdPelicula=:IdPelicula");
-                            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                            $sentenciaSQL->execute();
-                            $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-                            $restriccionEdad = $peliculas['restriccionEdad']; ?>
-                            <option>
-                                <?php if ($restriccionEdad == "ATP") {
-                                    echo $restriccionEdad;
-                                    ?>
-                                </option>
-                                <option value="13+">13+</option>
-                                <option value="16+">16+</option>
-                                <option value="18+">18+</option>
-                                <?php
-                                } elseif ($restriccionEdad == "13+") {
-                                    echo $restriccionEdad;
-                                    ?>
-                                </option>
-                                <option value="ATP">ATP</option>
-                                <option value="16+">16+</option>
-                                <option value="18+">18+</option>
-                                <?php
-                                } elseif ($restriccionEdad == "16+") {
-                                    echo $restriccionEdad;
-                                    ?>
-                                </option>
-                                <option value="ATP">ATP</option>
-                                <option value="13+">13+</option>
-                                <option value="18+">18+</option>
-                                <?php
-                                } elseif ($restriccionEdad == "18+") {
-                                    echo $restriccionEdad;
-                                    ?>
-                                </option>
-                                <option value="ATP">ATP</option>
-                                <option value="13+">13+</option>
-                                <option value="16+">16+</option>
-                                <?php
-                                } else if ($restriccionEdad == "") {
-                                    echo "ATP";
-                                    ?>
-                                    </option>
-                                    <option value="13+">13+</option>
-                                    <option value="16+">16+</option>
-                                    <option value="18+">18+</option>
-                                <?php
-                                }
+
+                            $listaRestriccionEdad = ListaPeliculas($db, "RestriccionEdad");
+
+                            foreach ($listaRestriccionEdad as $restriccionEdad) {
+
+
                                 ?>
-                            </option>
+                                <option>
+                                    <?php echo $restriccionEdad['restriccionEdad'] ?>
+                                </option>
+                            <?php } ?>
+
+
                         </select>
 
                     </div>
@@ -443,38 +400,24 @@ $listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     <div class="form-group">
                         <label>Tipo:</label>
-                        <br>
                         <select name="txtTipo">
 
                             <?php
-                            //Sentencia para seleccionar los datos de la variables "tipo" teniendo en cuenta el IdPelicula seleccionado, para setear las opciones del ComboBox tipo
-                            $sentenciaSQL = $conexion->prepare("SELECT tipo FROM peliculas WHERE IdPelicula=:IdPelicula");
-                            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                            $sentenciaSQL->execute();
-                            $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-                            $tipo = $peliculas['tipo']; ?>
-                            <option>
-                                <?php if ($tipo == "2D") {
-                                    echo $tipo;
-                                    ?>
-                                </option>
-                                <option value="3D">3D</option>
-                                <?php
-                                } elseif ($tipo == "3D") {
-                                    echo $tipo; ?>
-                                </option>
-                                <option value="2D">2D</option>
-                                <?php
-                                } else if ($tipo == "") {
-                                    echo "2D";
-                                    ?>
-                                    </option>
-                                    <option value="3D">3D</option>
-                                <?php
-                                }
+
+                            $listaTipo = ListaPeliculas($db, "Tipo");
+
+                            foreach ($listaTipo as $Tipo) {
+
+
                                 ?>
-                            </option>
+                                <option value=> <?php echo $Tipo['tipo'] ?>
+                                </option>
+                            <?php } ?>
+
+
+
                         </select>
+
 
                     </div>
                     <div class="form-group">
@@ -513,20 +456,18 @@ $listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
                         <button type="submit" name="accion" <?php
 
                         //Codigo para que al presionar en boton de "Seleccionar" o "Seleccionar ProximaPelicula" se desactive el boton "Agregar", quedando solo activo los botones "Modificar" y "Agregar"
-                        echo ($validarModificar != "Inicio") ? "disabled" : "" ?>
-                            value="Agregar" class="btn btn-success">Agregar</button>
-                        <button type="submit" name="accion" <?php echo ($validarModificar != "Seleccionar") ? "hidden" : "" ?>
-                            value="ModificarSeleccionar" class="btn btn-warning">Modificar</button>
+                        echo ($validarModificar != "Inicio") ? "disabled" : "" ?> value="Agregar" class="btn btn-success">Agregar</button>
+                        <button type="submit" name="accion" <?php echo ($validarModificar != "Seleccionar") ? "hidden" : "" ?> value="ModificarSeleccionar" class="btn btn-warning">Modificar</button>
                         <button type="submit" name="accion" <?php echo ($validarModificar != "SeleccionarProximaPelicula") ? "hidden" : "" ?>
                             value="ModificarSeleccionarProximaPelicula" class="btn btn-warning">Modificar</button>
-                        <button type="submit" name="accion" <?php echo ($accion = "") ? "disabled" : "" ?> value="Cancelar"
-                            class="btn btn-info">Cancelar</button>
+                        <button type="submit" name="accion" <?php echo ($accion = "") ? "disabled" : "" ?>
+                            value="Cancelar" class="btn btn-info">Cancelar</button>
                     </div>
                     <div class="btn-group" role="group" aria-label="">
                         <?php
                         //Codigo para que al presionar en boton de "Seleccionar" o "Seleccionar ProximaPelicula" se desactive el boton "Agregar", quedando solo activo los botones "Modificar" y "Agregar"?>
-                        <button type="submit" name="accion" <?php echo ($validarModificar != "SeleccionarProximaPelicula") ? "disabled" : "" ?>
-                            value="Pasar a Cartelera" class="btn btn-success">Pasar a Cartelera</button>
+                        <button type="submit" name="accion" <?php echo ($validarModificar != "SeleccionarProximaPelicula") ? "disabled" : "" ?> value="Pasar a Cartelera"
+                            class="btn btn-success">Pasar a Cartelera</button>
 
                     </div>
                 </form>
@@ -554,6 +495,9 @@ $listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
             </thead>
             <tbody>
                 <?php
+
+                $listaPeliculas = ListaPeliculas($db, "Lista");
+
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
                 foreach ($listaPeliculas as $pelicula) {
                     if ($pelicula['habilitada'] == "Si") {
@@ -620,38 +564,41 @@ $listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
             </thead>
             <tbody>
                 <?php
+
+                $listaProximasPeliculas = ListaProximasPeliculas($db);
                 //Sentencia para recorrer la tabla "ProximasPeliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
-                foreach ($listaPeliculas2 as $pelicula2) {
-                    if ($pelicula2['habilitada'] == "Si") { ?>
+                foreach ($listaProximasPeliculas as $ProximaPelicula) {
+                    if ($ProximaPelicula['habilitada'] == "Si") { ?>
                         <tr>
                             <td>
-                                <?php echo $pelicula2['IdPelicula'] ?>
+                                <?php echo $ProximaPelicula['IdPelicula'] ?>
                             </td>
                             <td>
-                                <?php echo $pelicula2['titulo'] ?>
+                                <?php echo $ProximaPelicula['titulo'] ?>
                             </td>
                             <td>
-                                <?php echo $pelicula2['duracion'] ?> Min
+                                <?php echo $ProximaPelicula['duracion'] ?> Min
                             </td>
                             <td>
-                                <?php echo $pelicula2['restriccionEdad'] ?>
+                                <?php echo $ProximaPelicula['restriccionEdad'] ?>
                             </td>
                             <td>
-                                <?php echo $pelicula2['categoria'] ?>
+                                <?php echo $ProximaPelicula['categoria'] ?>
                             </td>
                             <td>
-                                <?php echo $pelicula2['tipo'] ?>
+                                <?php echo $ProximaPelicula['tipo'] ?>
                             </td>
                             <td>
-                                <img src="../../../GamesOfMovies/img/<?php echo $pelicula2['imgResource'] ?>" width="50" alt="">
+                                <img src="../../../GamesOfMovies/img/<?php echo $ProximaPelicula['imgResource'] ?>" width="50"
+                                    alt="">
                             </td>
                             <td>
-                                <?php echo $pelicula2['fechaEstreno'] ?>
+                                <?php echo $ProximaPelicula['fechaEstreno'] ?>
                             </td>
                             <td>
                                 <form method="post">
                                     <input type="hidden" name="txtID" IdPelicula="txtID"
-                                        value="<?php echo $pelicula2['IdPelicula']; ?>">
+                                        value="<?php echo $ProximaPelicula['IdPelicula']; ?>">
                                     <input type="submit" name="accion" value="Seleccionar ProximaPelicula"
                                         class="btn btn-primary">
                                     <input type="submit" name="accion" value="Borrar" class="btn btn-danger"
