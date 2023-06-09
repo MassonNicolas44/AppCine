@@ -1,12 +1,11 @@
 <?php
-include ("CabeceraUsuario.php");
-include("Conexion.php");
 
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
 
-//Consulta a la base de datos para traer todas las ProximasPeliculas que esten habilitadas
-$sentenciaSQL = $conexion->prepare("SELECT * FROM proximaspeliculas WHERE habilitada like 'Si'");
-$sentenciaSQL->execute();
-$listaProximasPeliculas=$sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+//Lista de ProximasPeliculas, recopiladas desde la Base de Datos
+$listaProximasPeliculas=ListaProximasPeliculas($db,"Habilitada");
 
 
 ?>

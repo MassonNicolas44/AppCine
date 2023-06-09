@@ -1,6 +1,8 @@
 <?php
-include("CabeceraUsuario.php");
-include("Conexion.php");
+
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
 
 //Variables a Utilizar
 $CantidadBoleto = (isset($_POST['CantidadBoleto'])) ? $_POST['CantidadBoleto'] : "1";
@@ -11,24 +13,20 @@ $PrecioFinal = (isset($_POST['PrecioFinal'])) ? $_POST['PrecioFinal'] : "0";
 $IdUsuario = $_SESSION['IdUsuario'];
 $IdPelicula = $_SESSION['IdPelicula'];
 $horaPelicula = $_SESSION['horaPelicula'];
-$fechaPelicula = $_SESSION['fechaPelicula'];
+$fechaPelicula = date("Y-m-d", strtotime($_SESSION['fechaPelicula']));
 $Disponibilidad = 50;
 
 //Sentencia para la recolecciones de informacion de la tabla Peliculas teniendo en cuenta la pelicula seleccionada antes de pasar a esta pagina
-$sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si' And IdPelicula=$IdPelicula");
-$sentenciaSQL->execute();
-$listaPeliculas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaPeliculas = ListaPeliculas($db, $Valor = "Habilitada", $txtID = $IdPelicula);
 
 //Sentencia para la recolecciones de informacion teniendo en cuenta la pelicula, fecha y hora seleccionada antes de pasar a esta pagina
-$sentenciaSQL2 = $conexion->prepare("SELECT Sum(pr.CantBoleto) AS Disponibilidad,pr.fechaPelicula,pr.horaPelicula,pe.IdPelicula FROM proyecciones AS pr INNER JOIN peliculas AS pe
-ON pe.IdPelicula=pr.IdPelicula WHERE pr.fechaPelicula='$fechaPelicula' AND pr.horaPelicula='$horaPelicula' AND pe.IdPelicula=$IdPelicula");
-$sentenciaSQL2->execute();
-$listaPeliculas2 = $sentenciaSQL2->fetchAll(PDO::FETCH_ASSOC);
+$datosPelicula = DatosReserva($db,$fechaPelicula,$horaPelicula,$IdPelicula);
 
-//Guarda en uan variable la suma de todos los boletos de la pelicula seleccionada
-foreach ($listaPeliculas2 as $pelicula2) {
-  $CantBoleto = $pelicula2['Disponibilidad'];
+//Guarda en una variable la suma de todos los boletos de la pelicula seleccionada
+foreach ($datosPelicula as $datosPelicula2) {
+  $CantBoleto = $datosPelicula2['Disponibilidad'];
 }
+
 //Guarda en una variable, el precio de la pelicula seleccionada
 foreach ($listaPeliculas as $pelicula) {
   $PrecioUnico = $pelicula['precio'];
@@ -47,10 +45,8 @@ if (isset($_POST['Mas'])) {
 } elseif (isset($_POST['Reserva'])) {
   $PrecioFinal = $Contador * $PrecioUnico;
   //Sentencia para realizar la carga de una nueva proyeccion a la base de datos
-  $sentencia = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
-  VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No')";
-  $accion = $conexion->query($sentencia);
-  header("location:Cartelera.php");
+  RegistrarBoleto($db,$IdPelicula,$IdUsuario,$fechaPelicula,$horaPelicula,$CantidadBoleto,$PrecioFinal);
+  
 }
 
 //Aumenta CantBoleto (Contador que el usuario va incrementando o disminuyendo)

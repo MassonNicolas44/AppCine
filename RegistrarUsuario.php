@@ -1,6 +1,7 @@
 <?php
 
-include 'Conexion.php';
+require_once "Include/Conexion.php";
+require_once "Include/Funciones.php";
 
 //Variables a utilizar
 $nombre = (isset($_POST['nombre'])) ? $_POST['nombre'] : "";
@@ -20,29 +21,9 @@ if (isset($_POST['registrar'])) {
   ) {
 
     //Recolecta todos los datos de la tabla usuarios
-    $sentencia = $conexion->prepare("SELECT * FROM usuarios");
-    $sentencia->execute();
-    $ListaUsuarios = $sentencia->fetchAll(PDO::FETCH_ASSOC);
-
-    //Inicio de variables
-    $ExisteUsuario = false;
-    $ExisteEmail = false;
-
-    $usuario2 = "";
-    $email2 = "";
-
-    //Recorre todos los datos recolectados anteriormente, para luego consultar si ya existe el nombre de usuario y luego el mail
-    foreach ($ListaUsuarios as $ListaUsuario) {
-
-      $usuario2 = $ListaUsuario['usuario'];
-      $email2 = $ListaUsuario['email'];
-
-      if ($usuario == $usuario2) {
-        $ExisteUsuario = true;
-      } elseif ($email == $email2) {
-        $ExisteEmail = true;
-      }
-    }
+    $ListaUsuarios = ComprobacionUsuarioExiste($db,$usuario,$email);
+    list($ExisteEmail,$ExisteUsuario)=ComprobacionUsuarioExiste($db,$usuario,$email);
+    
 
     //En caso que exista el nombre de usuario y/o mail, mostrara un mensaje indicando que ya existe el usuario
     //Caso contrario se procede a insertar el usuario en la base de datos, con los datos correspondientes
@@ -52,10 +33,7 @@ if (isset($_POST['registrar'])) {
       echo "<script> alert('Ya existe un Usuario con este Email'); </script>";
     } elseif ($ExisteUsuario == false && $ExisteEmail == false) {
       //Sentencia para insertar un nuevo usuario a la base de datos desde Android
-      $sentencia = "INSERT INTO usuarios (nombre, usuario,telefono, email,contraseña,habilitado)
-  VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia','Si')";
-      $accion = $conexion->query($sentencia);
-      header("location:Login.php");
+      RegistrarUsuario($db,$nombre,$usuario,$telefono,$email,$contrasenia);
     }
   } else {
     echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";

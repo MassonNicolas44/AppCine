@@ -1,7 +1,7 @@
 <?php
-require_once "Include/Conexion.php";
-require_once "Include/Funciones.php";
-require_once "Include/Cabecera.php";
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
 
 //Variables a utilizar
 $IdUsuario = (isset($_POST['idUsuario'])) ? $_POST['idUsuario'] : "";
@@ -29,7 +29,7 @@ if (isset($_POST['HabilitarUsuario'])) {
         <div class="card-header"><em>Usuarios</em></div>
         <div class="card-header">
             <form action="InformeUsuarios.php" method="post">
-            <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Usuarios.php" class="btn btn-info" target='_blank'> Peliculas </a>
+            <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Usuarios.php" class="btn btn-info" target='_blank'> Imprimir Informe </a>
             </form>
         </div>
         <div class="card-body">

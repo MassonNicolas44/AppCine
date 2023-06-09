@@ -1,9 +1,9 @@
 <!-- Pagina -->
 <?php
 
-require_once "Include/Conexion.php";
-require_once "Include/Funciones.php";
-require_once "Include/Cabecera.php";
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
 
 //Declaracion de variables para luego ser utilizadas en distintos procesos
 
@@ -19,15 +19,7 @@ $txtImagen = (isset($_FILES['txtImagen']['name'])) ? $_FILES['txtImagen']['name'
 $txtFecha = (isset($_POST['txtFecha'])) ? $_POST['txtFecha'] : "";
 $accion = (isset($_POST['accion'])) ? $_POST['accion'] : "";
 
-
-$validarPelicula = false;
-$txtTitulo2 = "";
 $validarModificar = "Inicio";
-$Habilitacion = "Si";
-$anularHabilitacion = "No";
-$restriccionEdad = "";
-
-//Conexion a base de datos
 
 //Switch de opciones para pagina web
 switch ($accion) {
@@ -35,46 +27,30 @@ switch ($accion) {
     case "Agregar":
         //En caso de agregar una pelicula y esta tildada para agregar a cartelera, se agregara como se indica. En caso contrario, se agrega en 'proximaspeliculas'
         if (isset($_POST["cartelera"])) {
+
             //Comprobacion de que los campos no estan vacios
             if (
                 !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
                 !empty($txtFecha)
             ) {
-                $sentencia = $conexion->prepare("SELECT titulo FROM proximaspeliculas");
-                $sentencia->execute();
-                $peliculas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+                 //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
+                $ExistePelicula = ListaProximasPeliculas($db, "Titulo", null, $txtTitulo);
 
-                //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
-                foreach ($peliculas as $pelicula) {
-                    $txtTitulo2 = $pelicula['titulo'];
-                    if ($txtTitulo == $txtTitulo2) {
-                        $validarPelicula = true;
-                    }
-                }
-                if ($validarPelicula == true) {
+                if ($ExistePelicula == true) {
                     echo "<script> alert('Pelicula existe'); </script>";
                 } else {
-                    //Sentencia para cargar la pelicula en la tabla "proximasPeliculas"
-                    $sentenciaSQL = $conexion->prepare("INSERT INTO proximaspeliculas(titulo, duracion, restriccionEdad, 
-                        categoria, tipo, imgResource,fechaEstreno,habilitadaProximaPelicula) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:imgResource,:fechaEstreno,:habilitadaProximaPelicula);");
-                    $sentenciaSQL->bindParam(':titulo', $txtTitulo);
-                    $sentenciaSQL->bindParam(':duracion', $txtDuracion);
-                    $sentenciaSQL->bindParam(':restriccion', $txtrestriccionEdad);
-                    $sentenciaSQL->bindParam(':categoria', $txtCategoria);
-                    $sentenciaSQL->bindParam(':tipo', $txtTipo);
-                    //En caso de no seleccionar ninguna imagen, se coloca una pre establecida
+
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
                         $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                        move_uploaded_file($tmpImagen, "../../../GamesOfMovies/img/" . $nombreArchivo);
+                        move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
                     } else {
                         $txtImagen = "NoImagen.jpeg";
                         $nombreArchivo = "NoImagen.jpeg";
                     }
-                    $sentenciaSQL->bindParam(':imgResource', $nombreArchivo);
-                    $sentenciaSQL->bindParam(':fechaEstreno', $txtFecha);
-                    $sentenciaSQL->bindParam(':habilitadaProximaPelicula', $Habilitacion);
-                    $sentenciaSQL->execute();
+
+                    //Insertar nueva ProximaPelicula
+                    InsertarNuevaPelicula($db,"ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo,null,null, $nombreArchivo, $txtFecha);
 
                     header("Location:Peliculas.php");
                 }
@@ -88,41 +64,24 @@ switch ($accion) {
                 !empty($txtPrecio) && !empty($txtDescripcion)
             ) {
 
-                $sentencia = $conexion->prepare("SELECT titulo FROM peliculas");
-                $sentencia->execute();
-                $peliculas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+                //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
+                $ExistePelicula = ListaPeliculas($db, "Titulo", null, $txtTitulo);
 
-                //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
-                foreach ($peliculas as $pelicula) {
-                    $txtTitulo2 = $pelicula['titulo'];
-                    if ($txtTitulo == $txtTitulo2) {
-                        $validarPelicula = true;
-                    }
-                }
-                if ($validarPelicula == true) {
+                if ($ExistePelicula == true) {
                     echo "<script> alert('Pelicula existe'); </script>";
                 } else {
-                    //Sentencia para cargar la pelicula en la tabla "Peliculas"
-                    $sentenciaSQL = $conexion->prepare("INSERT INTO peliculas(titulo, duracion, restriccionEdad, categoria, tipo, precio,descripcion, imgResource,habilitacion) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:precio,:descripcion,:imgResource,:habilitacion);");
-                    $sentenciaSQL->bindParam(':titulo', $txtTitulo);
-                    $sentenciaSQL->bindParam(':duracion', $txtDuracion);
-                    $sentenciaSQL->bindParam(':restriccion', $txtrestriccionEdad);
-                    $sentenciaSQL->bindParam(':categoria', $txtCategoria);
-                    $sentenciaSQL->bindParam(':tipo', $txtTipo);
-                    $sentenciaSQL->bindParam(':precio', $txtPrecio);
-                    $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
-                    //En caso de no seleccionar ninguna imagen, se coloca una pre establecida
+
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
                         $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                        move_uploaded_file($tmpImagen, "../../../GamesOfMovies/img/" . $nombreArchivo);
+                        move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
                     } else {
                         $txtImagen = "NoImagen.jpeg";
                         $nombreArchivo = "NoImagen.jpeg";
                     }
-                    $sentenciaSQL->bindParam(':imgResource', $nombreArchivo);
-                    $sentenciaSQL->bindParam(':habilitacion', $Habilitacion);
-                    $sentenciaSQL->execute();
+
+                    //Insertar nueva Pelicula
+                    InsertarNuevaPelicula($db,"Peliculas",$txtTitulo,$txtDuracion,$txtrestriccionEdad,$txtCategoria,$txtTipo,$txtPrecio,$txtDescripcion,$nombreArchivo);
 
                     header("Location:Peliculas.php");
                 }
@@ -136,87 +95,64 @@ switch ($accion) {
     case "ModificarSeleccionar":
 
         //Comprobacion de que los campos no estan vacios
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtPrecio) && !empty($txtDescripcion)
-        ) {
-
-            //Sentencia para actualizar registros con respecto a la tabla peliculas
-            $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET titulo=:titulo, duracion=:duracion, 
-                    restriccionEdad=:restriccionEdad, categoria=:categoria, tipo=:tipo, precio=:precio, descripcion=:descripcion  
-                    WHERE IdPelicula=:IdPelicula");
-            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-            $sentenciaSQL->bindParam(':titulo', $txtTitulo);
-            $sentenciaSQL->bindParam(':duracion', $txtDuracion);
-            $sentenciaSQL->bindParam(':restriccionEdad', $txtrestriccionEdad);
-            $sentenciaSQL->bindParam(':categoria', $txtCategoria);
-            $sentenciaSQL->bindParam(':tipo', $txtTipo);
-            $sentenciaSQL->bindParam(':precio', $txtPrecio);
-            $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
-            $sentenciaSQL->execute();
+        //if (
+         //   !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+         //   !empty($txtPrecio) && !empty($txtDescripcion)
+        //) {
 
             //En caso de no modificar la imagen, no se modifica
             if ($txtImagen !== "") {
                 $nombreArchivo = $_FILES["txtImagen"]["name"];
                 $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                move_uploaded_file($tmpImagen, "../../../GamesOfMovies/img/" . $nombreArchivo);
-                $sentenciaSQL = $conexion->prepare("SELECT imgResource FROM peliculas WHERE IdPelicula=:IdPelicula");
-                $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                $sentenciaSQL->execute();
-                $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-                $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET imgResource=:imgResource WHERE IdPelicula=:IdPelicula");
-                $sentenciaSQL->bindParam(':imgResource', $nombreArchivo);
-                $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                $sentenciaSQL->execute();
+                move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+
+                //Sentencia para actualizar registros con respecto a la tabla peliculas
+                ModificarPelicula($db, $Valor = "Peliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+                $txtPrecio, $txtDescripcion, $nombreArchivo,null,$txtID);
+            }else{
+                //Sentencia para actualizar registros con respecto a la tabla peliculas
+                ModificarPelicula($db, $Valor = "Peliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+                $txtPrecio, $txtDescripcion, null,null,$txtID);
             }
+
+
             header("Location:Peliculas.php");
-        } else {
+       // } else {
             $validarModificar = "Seleccionar";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
-        }
+       //     echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+       // }
 
         break;
 
 
     case "ModificarSeleccionarProximaPelicula":
         //Comprobacion de que los campos no estan vacios
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtFecha)
-        ) {
+        //if (
+        //    !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+        //    !empty($txtFecha)
+        //) {
 
-            //Sentencia para actualizar registros con respecto a la tabla proximasPeliculas
-            $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET titulo=:titulo, duracion=:duracion, 
-                        restriccionEdad=:restriccionEdad, categoria=:categoria, tipo=:tipo, fechaEstreno=:fechaEstreno  
-                        WHERE IdPelicula=:IdPelicula");
-            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-            $sentenciaSQL->bindParam(':titulo', $txtTitulo);
-            $sentenciaSQL->bindParam(':duracion', $txtDuracion);
-            $sentenciaSQL->bindParam(':restriccionEdad', $txtrestriccionEdad);
-            $sentenciaSQL->bindParam(':categoria', $txtCategoria);
-            $sentenciaSQL->bindParam(':tipo', $txtTipo);
-            $sentenciaSQL->bindParam(':fechaEstreno', $txtFecha);
-            $sentenciaSQL->execute();
 
-            //En caso de no modificar la imagen, no se modifica
-            if ($txtImagen !== "") {
-                $nombreArchivo = $_FILES["txtImagen"]["name"];
-                $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                move_uploaded_file($tmpImagen, "../../../GamesOfMovies/img/" . $nombreArchivo);
-                $sentenciaSQL = $conexion->prepare("SELECT imgResource FROM proximaspeliculas WHERE IdPelicula=:IdPelicula");
-                $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                $sentenciaSQL->execute();
-                $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-                $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET imgResource=:imgResource WHERE IdPelicula=:IdPelicula");
-                $sentenciaSQL->bindParam(':imgResource', $nombreArchivo);
-                $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                $sentenciaSQL->execute();
-            }
-            header("Location:Peliculas.php");
-        } else {
-            $validarModificar = "SeleccionarProximaPelicula";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
+        //En caso de no modificar la imagen, no se modifica
+        if ($txtImagen !== "") {
+            $nombreArchivo = $_FILES["txtImagen"]["name"];
+            $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
+            move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+
+            //Sentencia para actualizar registros con respecto a la tabla peliculas
+            ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+            null, null, $nombreArchivo,$txtFecha,$txtID);
+        }else{
+            //Sentencia para actualizar registros con respecto a la tabla peliculas
+            ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+            null, null, null,$txtFecha,$txtID);
         }
+
+            header("Location:Peliculas.php");
+        //} else {
+            $validarModificar = "SeleccionarProximaPelicula";
+        //    echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
+        //}
         break;
 
     case "Cancelar":
@@ -224,11 +160,12 @@ switch ($accion) {
         break;
 
     case "Seleccionar":
-        //Sentencia para recuperar la ID de la la tabla "pelicula" seleccionada desde la Web, para luego cargarla en los textview correspondientes
         
-        $resultado=ListaPeliculas($db,"Seleccionar",$txtID);
+        //Traer datos de la Pelicula Seleccionada
+        $resultado = ListaPeliculas($db, "Seleccionar", $txtID);
         $SeleccionPelicula = mysqli_fetch_assoc($resultado);
 
+        //Asignar cada campo con la Pelicula Seleccionada
         $txtTitulo = $SeleccionPelicula['titulo'];
         $txtDuracion = $SeleccionPelicula['duracion'];
         $txtrestriccionEdad = $SeleccionPelicula['restriccionEdad'];
@@ -242,11 +179,12 @@ switch ($accion) {
         break;
 
     case "Seleccionar ProximaPelicula":
-        //Sentencia para recuperar la ID de la tabla "proximaspeliculas" seleccionada desde la Web, para luego cargarla en los textview correspondientes
 
-        $resultado=ListaProximasPeliculas($db,"Seleccionar",$txtID);
+        //Traer datos de la ProximaPelicula Seleccionada
+        $resultado = ListaProximasPeliculas($db, "Seleccionar", $txtID);
         $SeleccionProximaPelicula = mysqli_fetch_assoc($resultado);
 
+        //Asignar cada campo con la ProximaPelicula Seleccionada
         $txtTitulo = $SeleccionProximaPelicula['titulo'];
         $txtDuracion = $SeleccionProximaPelicula['duracion'];
         $txtrestriccionEdad = $SeleccionProximaPelicula['restriccionEdad'];
@@ -259,95 +197,66 @@ switch ($accion) {
         break;
 
     case "Pasar a Cartelera":
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtPrecio) && !empty($txtDescripcion)
-        ) {
+        //if (
+        //    !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+        //    !empty($txtPrecio) && !empty($txtDescripcion)
+        //) {
 
-            $sentencia = $conexion->prepare("SELECT titulo FROM peliculas");
-            $sentencia->execute();
-            $peliculas = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+            
+               //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
+               $ExistePelicula = ListaPeliculas($db, "Titulo", null, $txtTitulo);
 
-            //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
-            foreach ($peliculas as $pelicula) {
-                $txtTitulo2 = $pelicula['titulo'];
-                if ($txtTitulo == $txtTitulo2) {
-                    $validarPelicula = true;
-                }
-            }
-            if ($validarPelicula == true) {
-                echo "<script> alert('Pelicula existe'); </script>";
-            } else {
-                //Sentencia para insertar la pelicula en la tabla "peliculas"
-                $sentenciaSQL = $conexion->prepare("INSERT INTO peliculas(titulo, duracion, restriccionEdad, categoria, tipo, precio,descripcion, imgResource) VALUES (:titulo,:duracion,:restriccion,:categoria,:tipo,:precio,:descripcion,:imgResource);");
-                $sentenciaSQL->bindParam(':titulo', $txtTitulo);
-                $sentenciaSQL->bindParam(':duracion', $txtDuracion);
-                $sentenciaSQL->bindParam(':restriccion', $txtrestriccionEdad);
-                $sentenciaSQL->bindParam(':categoria', $txtCategoria);
-                $sentenciaSQL->bindParam(':tipo', $txtTipo);
-                $sentenciaSQL->bindParam(':precio', $txtPrecio);
-                $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
-                $sentenciaSQL->bindParam(':imgResource', $txtImagen);
-                //En caso de no seleccionar ninguna imagen, se coloca una pre establecida
-                if ($txtImagen != "") {
-                    $nombreArchivo = $_FILES["txtImagen"]["name"];
-                    $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                    move_uploaded_file($tmpImagen, "../../../GamesOfMovies/img/" . $nombreArchivo);
-                } else {
-                    $txtImagen = "NoImagen.jpeg";
-                    $nombreArchivo = "NoImagen.jpeg";
-                }
+               if ($ExistePelicula == true) {
+                   echo "<script> alert('Pelicula existe'); </script>";
+               } else {
 
-                $sentenciaSQL->bindParam(':imgResource', $nombreArchivo);
-                $sentenciaSQL->execute();
+                   if ($txtImagen != "") {
+                       $nombreArchivo = $_FILES["txtImagen"]["name"];
+                       $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
+                       move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+                   } else {
+                       $txtImagen = "NoImagen.jpeg";
+                       $nombreArchivo = "NoImagen.jpeg";
+                   }
 
-                //Sentencia para eliminar la pelicula en la tabla "proximaspeliculas"
-                $sentenciaSQL = $conexion->prepare("DELETE from proximaspeliculas WHERE IdPelicula=:IdPelicula");
-                $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-                $sentenciaSQL->execute();
-                $peliculas = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
+                   //Insertar nueva Pelicula
+                   InsertarNuevaPelicula($db,"Peliculas",$txtTitulo,$txtDuracion,$txtrestriccionEdad,$txtCategoria,$txtTipo,$txtPrecio,$txtDescripcion,$nombreArchivo);
+                
+                   //Eliminar la pelicula que estaba en ProximasPeliculas
+                   EliminarProximaPelicula($db,$txtID);
+
                 header("Location:Peliculas.php");
-            }
-        } else {
+               }
+
+        //} else {
             $validarModificar = "SeleccionarProximaPelicula";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
-        }
+        //    echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+        //}
         break;
 
     case "Borrar":
         if ($accion = "Seleccionar") {
-            $sentenciaSQL = $conexion->prepare("UPDATE peliculas SET habilitada=:habilitada WHERE IdPelicula=:IdPelicula");
-            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-            $sentenciaSQL->bindParam(':habilitada', $anularHabilitacion);
-            $sentenciaSQL->execute();
+
+            //Anular la Pelicula a Borrar
+            AccionPelicula($db, null, 'No', $txtID, null);
+            header("Location:Peliculas.php");
+
         }
         if ($accion = "Seleccionar ProximaPelicula") {
-            //Sentencia para eliminar una pelicula de la base de datos (tabla "proximaspeliculas") desde la web
-            $sentenciaSQL = $conexion->prepare("UPDATE proximaspeliculas SET habilitadaProximaPelicula=:habilitadaProximaPelicula WHERE IdPelicula=:IdPelicula");
-            $sentenciaSQL->bindParam(':IdPelicula', $txtID);
-            $sentenciaSQL->bindParam(':habilitadaProximaPelicula', $anularHabilitacion);
-            $sentenciaSQL->execute();
+
+            //Anular la ProximaPelicula a Borrar
+            AccionPelicula($db, null, 'No', null, $txtID);
+            header("Location:Peliculas.php");
+
         }
-        header("Location:Peliculas.php");
+
         break;
 
 }
 
-ListaProximasPeliculas($db);
 
 ?>
 
-<script>
-    function confirmacion() {
-        var respuesta = confirm("¿Deseas borrar esta pelicula?");
-        if (respuesta == true) {
-            <label> Titulo:</label>
-            return true;
-        } else {
-            return false;
-        }
-    }
-</script>
 <div class="row">
     <div class="col-md-3">
         <div class="col-md-3 col-md-offset-2"></div>
@@ -376,19 +285,16 @@ ListaProximasPeliculas($db);
                         <label>Restriccion Edad:</label>
                         <select name="txtrestriccionEdad">
 
-                            <?php
-
+                            <?php 
+                            //Trae la lista de Restriccion Edad que esta guardada en la base de dato para asignarse al Select
                             $listaRestriccionEdad = ListaPeliculas($db, "RestriccionEdad");
 
                             foreach ($listaRestriccionEdad as $restriccionEdad) {
-
-
                                 ?>
                                 <option>
                                     <?php echo $restriccionEdad['restriccionEdad'] ?>
                                 </option>
                             <?php } ?>
-
 
                         </select>
 
@@ -402,23 +308,19 @@ ListaProximasPeliculas($db);
                         <label>Tipo:</label>
                         <select name="txtTipo">
 
-                            <?php
-
+                            <?php 
+                            
+                            //Trae la lista de Tipo que esta guardada en la base de dato para asignarse al Select
                             $listaTipo = ListaPeliculas($db, "Tipo");
-
                             foreach ($listaTipo as $Tipo) {
 
-
                                 ?>
-                                <option value=> <?php echo $Tipo['tipo'] ?>
+                                <option>
+                                    <?php echo $Tipo['tipo'] ?>
                                 </option>
                             <?php } ?>
 
-
-
                         </select>
-
-
                     </div>
                     <div class="form-group">
                         <label>Precio:</label>
@@ -428,8 +330,9 @@ ListaProximasPeliculas($db);
 
                     <div class="form-group">
                         <label>Descripcion:</label>
-                        <input type="text" class="form-control" value="<?php echo $txtDescripcion; ?>"
-                            name="txtDescripcion" placeholder="Ingresar descripcion" maxlength="40">
+                        <p><textarea input type="text" class="form-control" value="<?php echo $txtDescripcion; ?>"
+                            name="txtDescripcion" placeholder="Ingresar descripcion" cols="34" rows="5"></textarea></p>
+
                     </div>
 
                     <div class="form-group">
@@ -496,6 +399,7 @@ ListaProximasPeliculas($db);
             <tbody>
                 <?php
 
+                //Recopila la lista de las Peliculas que existen en la base de datos
                 $listaPeliculas = ListaPeliculas($db, "Lista");
 
                 //Sentencia para recorrer la tabla "Peliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
@@ -524,8 +428,8 @@ ListaProximasPeliculas($db);
                             <td>
                                 <?php echo $pelicula['precio'] ?> $
                             </td>
-                            <td>
-                                <?php echo $pelicula['descripcion'] ?>
+                            <td style="max-width: 40px; overflow: hidden;">
+                                <?php  echo $pelicula['descripcion'] ?>
                             </td>
                             <td>
                                 <img src="../../../GamesOfMovies/img/<?php echo $pelicula['imgResource'] ?>" width="50" alt="">
@@ -565,7 +469,9 @@ ListaProximasPeliculas($db);
             <tbody>
                 <?php
 
+                //Recopila la lista de las ProximasPeliculas que existen en la base de datos
                 $listaProximasPeliculas = ListaProximasPeliculas($db);
+
                 //Sentencia para recorrer la tabla "ProximasPeliculas" y ir llenando cada fila con los datos que corresponda de cada pelicula
                 foreach ($listaProximasPeliculas as $ProximaPelicula) {
                     if ($ProximaPelicula['habilitada'] == "Si") { ?>
@@ -596,6 +502,7 @@ ListaProximasPeliculas($db);
                                 <?php echo $ProximaPelicula['fechaEstreno'] ?>
                             </td>
                             <td>
+
                                 <form method="post">
                                     <input type="hidden" name="txtID" IdPelicula="txtID"
                                         value="<?php echo $ProximaPelicula['IdPelicula']; ?>">
@@ -612,6 +519,20 @@ ListaProximasPeliculas($db);
             </tbody>
         </table>
     </div>
+
+
+    <script>
+    //Mensaje de Confirmacion al querar Anular Pelicula y/o Proxima Pelicula
+    function confirmacion() {
+        var respuesta = confirm("¿Deseas borrar esta pelicula?");
+        if (respuesta == true) {
+            <label> Titulo:</label>
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     <!-- Pie de la Pagina -->
 </div>

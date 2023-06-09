@@ -1,12 +1,12 @@
 <?php
-require "Conexion.php";
-require "fpdf/fpdf.php";
+
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../fpdf/fpdf.php";
 
 
 //Sentencia para mostrar todas las peliculas (las que estan actualmente y las que no)
-$sentenciaSQL = $conexion->prepare("SELECT IdPelicula,titulo,duracion,restriccionEdad,categoria,tipo,precio,habilitada FROM peliculas");
-$sentenciaSQL->execute();
-$listaPeliculas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaPeliculas = ListaPeliculas($db);
 
 //Generar archivo PDF con el resultado del informe
 $pdf = new FPDF("P", "mm", "letter");

@@ -1,7 +1,7 @@
 <?php
-require_once "Include/Conexion.php";
-require_once "Include/Funciones.php";
-require_once "Include/Cabecera.php";
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
 
 
 //Variables a utilizar
@@ -37,18 +37,22 @@ if (isset($_POST['Peliculas'])) {
 if (isset($_POST['HabilitarPelicula'])) {
 
     AccionPelicula($db, 'Si', null, $IdPelicula, null);
+    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['InhabilitarPelicula'])) {
 
     AccionPelicula($db, null, 'No', $IdPelicula, null);
+    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['HabilitarProximasPeliculas'])) {
 
     AccionPelicula($db, 'Si', null, null, $IdProximasPelicula);
+    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['InhabilitarProximasPeliculas'])) {
 
     AccionPelicula($db, null, 'No', null, $IdProximasPelicula);
+    header("Location:InformePeliculas.php");
 
 }
 
@@ -85,7 +89,7 @@ if (isset($_POST['HabilitarPelicula'])) {
                         ?>
                         <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Peliculas.php" class="btn btn-info"
                             target='_blank'> Peliculas </a>
-                        <a href="<?php echo $_SESSION['url']; ?>/Imprimir/ProximaPeliculas.php" class="btn btn-info"
+                        <a href="<?php echo $_SESSION['url'] ?>/Imprimir/ProximasPeliculas.php" class="btn btn-info"
                             target='_blank'> Proximas Peliculas </a>
 
                     </div>

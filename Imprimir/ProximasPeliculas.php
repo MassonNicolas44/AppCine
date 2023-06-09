@@ -1,11 +1,11 @@
 <?php
-require "Conexion.php";
-require "fpdf/fpdf.php";
+
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../fpdf/fpdf.php";
 
 //Sentencia para mostrar todas las proximas peliculas (las que estan actualmente y las que no)
-$sentenciaSQL = $conexion->prepare("SELECT * FROM ProximasPeliculas");
-$sentenciaSQL->execute();
-$listaProximasPeliculas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+$listaProximasPeliculas = ListaProximasPeliculas($db);
 
 //Generar archivo PDF con el resultado del informe
 $pdf = new FPDF("P", "mm", "letter");

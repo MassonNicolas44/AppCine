@@ -1,13 +1,11 @@
 <?php
-require_once "Include/Conexion.php";
-require_once "Include/Cabecera.php";
-require_once "Include/Funciones.php";
+require_once "../Include/Conexion.php";
+require_once "../Include/Cabecera.php";
+require_once "../Include/Funciones.php";
 
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
 $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
-
-
 
 if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == "Venta")) {
 
@@ -47,10 +45,10 @@ if (isset($_POST['ListaVenta'])) {
 //Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el correspondiente informe (teniendo en cuenta el rango de fecha)
 if (isset($_POST['SeleccionarFecha'])) {
 
-    if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
 
-        $txtFechaInicio = date("d-m-Y", strtotime($_POST['txtFechaInicio']));
-        $txtFechaFin = date("d-m-Y", strtotime($_POST['txtFechaFin']));
+        $txtFechaInicio = date("Y-m-d", strtotime($_POST['txtFechaInicio']));
+        $txtFechaFin = date("Y-m-d", strtotime($_POST['txtFechaFin']));
 
     } else {
         $txtFechaInicio = "";
@@ -67,6 +65,17 @@ if (isset($_POST['SeleccionarFecha'])) {
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
 
+}
+
+if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
+
+    if(($txtFechaInicio!=$_SESSION['txtFechaInicio']) || ($txtFechaFin!=$_SESSION['txtFechaFin'])){
+        $txtFechaInicio = "";
+        $txtFechaFin = "";
+    
+        $_SESSION['txtFechaInicio'] = $txtFechaInicio;
+        $_SESSION['txtFechaFin'] = $txtFechaFin;
+    }
 }
 
 
@@ -87,7 +96,7 @@ if (isset($_POST['SeleccionarFecha'])) {
             <form action="InformeVentas.php" method="post">
                 <div class="row">
                     <?php
-                    if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
+                    if ($txtFechaInicio!="" && $txtFechaFin!="") {
                         ?>
                         <div class="col-md-10">
                             <p align="left">
@@ -118,11 +127,10 @@ if (isset($_POST['SeleccionarFecha'])) {
 
 
                 <?php
-                if (!empty($txtFechaInicio) && !empty($txtFechaFin)) {
+                if ($txtFechaInicio!="" && ($txtFechaFin!="")) {
                     $MostrarFechaInicio = date("Y-m-d", strtotime($txtFechaInicio));
                     $MostrarFechaFin = date("Y-m-d", strtotime($txtFechaFin));
                 }
-
 
                 ?>
 

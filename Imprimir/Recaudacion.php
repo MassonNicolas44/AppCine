@@ -7,8 +7,8 @@ session_start();
 
 //Condicionales para preguntar si se ha seleccionado un rango de fecha para el informe
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
-    $FechaInicio = date("d-m-Y", strtotime($_SESSION['txtFechaInicio']));
-    $FechaFin = date("d-m-Y", strtotime($_SESSION['txtFechaFin']));
+    $FechaInicio = date("Y-m-d", strtotime($_SESSION['txtFechaInicio']));
+    $FechaFin = date("Y-m-d", strtotime($_SESSION['txtFechaFin']));
 }
 
 //Sentencia para ranking de peliculas ordenada por mayor recaudacion
@@ -38,10 +38,10 @@ $pdf->SetXY($x + 160, $y - 17);
 $pdf->SetFont("Arial", "", 12);
 
 if (!empty($FechaInicio) && !empty($FechaFin)) {
-    $pdf->Cell(25, 5, "Fecha: " . date("d/m/Y"), 0, 1, "C");
+    $pdf->Cell(25, 5, "Fecha: " . date("Y/m/d"), 0, 1, "C");
     $pdf->Cell(317, 8, "Rango: " . $FechaInicio . " al " . $FechaFin, 0, 1, "C");
 } else {
-    $pdf->Cell(25, 5, "Fecha: " . date("d/m/Y"), 0, 1, "C");
+    $pdf->Cell(25, 5, "Fecha: " . date("Y/m/d"), 0, 1, "C");
 }
 
 $pdf->Ln(20);

@@ -1,17 +1,16 @@
 <?php
-require_once("Include/Conexion.php");
-require_once("Include/Cabecera.php");
+require_once("../Include/Conexion.php");
+require_once("../Include/Funciones.php");
+require_once("../Include/Cabecera.php");
 
 //Variables a utilizar
 $IdPelicula = (isset($_POST['idPelicula'])) ? $_POST['idPelicula'] : "";
 $FechaFinal = (isset($_POST['fechaFinal'])) ? $_POST['fechaFinal'] : "" . date("Y-m-d");
-;
+
 $FechaBD = date('d-m-Y', strtotime($FechaFinal));
 
-//Consulta sobre la tabla "Peliculas" que luego es utilizada para ser mostradas en la pagina
-$sentenciaSQL = $conexion->prepare("SELECT * FROM peliculas WHERE habilitada like 'Si'");
-$sentenciaSQL->execute();
-$listaPeliculas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+//Lista de las Peliculas en cartelera, Recopilada desde la Base de Datos
+$listaPeliculas = ListaPeliculas($db,"Habilitada");
 
 //Condicionales, en el cual se guarda en la Session las variables de Cartelera-IdPelicula-HoraPelicula-FechaPelicula, que son utilizadas al cambiar de pagina
 if (isset($_POST['16hs'])) {

@@ -1,46 +1,41 @@
 <?php
-include "Conexion.php";
-include "CabeceraUsuario.php";
+
+require_once "../Include/Conexion.php";
+require_once "../Include/Funciones.php";
+require_once "../Include/Cabecera.php";
+
+
 
 //Variables a utilizar
-$Anular = "Si";
 $NombreUsuario = $_SESSION['Usuario'];
 $IdVenta = (isset($_POST['idVenta'])) ? $_POST['idVenta'] : "";
-//Consulta a la Base de Datos para Luego en caso de anular un boleto, realice un update y modifique la columna correspondiente
-$sentenciaSQL = $conexion->prepare("SELECT pr.IdVenta,us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pr.Anulada
-    FROM proyecciones AS pr 
-    INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
-    INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
-    WHERE us.usuario like $NombreUsuario and
-          pr.Anulada like 'No'
-    ORDER BY pr.fechaPelicula");
-$sentenciaSQL->execute();
-$listaVentas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+//Lista de Boletos Comprados por el usuario Logeado
+$listaVentas = AnularBoleto($db,$NombreUsuario,"Lista");
 
 if (isset($_POST['AnularVenta'])) {
-    $sentenciaSQL = $conexion->prepare("UPDATE proyecciones SET Anulada=:Anulada WHERE IdVenta=:IdVenta");
-    $sentenciaSQL->bindParam(':IdVenta', $IdVenta);
-    $sentenciaSQL->bindParam(':Anulada', $Anular);
-    $sentenciaSQL->execute();
-    header("Location:AnularBoleto.php");
+    //Funcion para anular la venta de boleto realizada por el usuario
+    AnularBoleto($db,$NombreUsuario,"AnularVenta",$IdVenta);
 }
 
 ?>
 <br />
 <div class="container">
     <div class="card">
-        <div class="card-header"><em>Ventas</em></div>
+        <div class="card-header"><em>Lista de Reservas</em></div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Usuario</th>
-                        <th>Titulo</th>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>Cantidad Boleto</th>
-                        <th>Precio Final [$]</th>
-                        <th>Acciones</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Pelicula</th>
+                        <th>Fecha Pelicula</th>
+                        <th>Hora Pelicula</th>
+                        <th>Cant. Boleto</th>
+                        <th>Precio Final</th>
+                        <th>Accion</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +46,12 @@ if (isset($_POST['AnularVenta'])) {
                         <tr>
                             <td>
                                 <?php echo $Ventas['usuario'] ?>
+                            </td>
+                            <td>
+                                <?php echo $Ventas['nombre'] ?>
+                            </td>
+                            <td>
+                                <?php echo $Ventas['apellido'] ?>
                             </td>
                             <td>
                                 <?php echo $Ventas['titulo'] ?>
@@ -65,7 +66,7 @@ if (isset($_POST['AnularVenta'])) {
                                 <?php echo $Ventas['CantBoleto'] ?>
                             </td>
                             <td>
-                                <?php echo $Ventas['precioFinal'] ?>
+                                <?php echo $Ventas['precioFinal'] ."$" ?>
                             </td>
                             <td>
                                 <form method="post">
