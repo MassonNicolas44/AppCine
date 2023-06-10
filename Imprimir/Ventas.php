@@ -6,6 +6,8 @@ require_once "../fpdf/fpdf.php";
 
 session_start();
 
+$Total=0;
+
 //Condicionales para preguntar si se ha seleccionado un rango de fecha para el informe
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
     $FechaInicio = date("Y-m-d", strtotime($_SESSION['txtFechaInicio']));
@@ -68,8 +70,15 @@ foreach ($listaVentas as $Ventas) {
     $pdf->Cell(16, 6, $Ventas['horaPelicula'], 1, 0, "C");
     $pdf->Cell(24, 6, $Ventas['CantBoleto'], 1, 0, "C");
     $pdf->Cell(20, 6, $Ventas['precioFinal'] . "$", 1, 1, "C");
+    $Total=$Total+$Ventas['precioFinal'];
 }
 
+//Muestra de la sumatoria de todos los precios
+$pdf->ln();
+$pdf->SetFont("Arial", "B", 16);
+$pdf->Cell(15, 6, "Total", 1, 0, "C");
+$pdf->Cell(147, 6, "", 1, 0, "B");
+$pdf->Cell(27, 6, $Total." $ ", 1, 1, "C");
 $pdf->Output();
 
 ?>

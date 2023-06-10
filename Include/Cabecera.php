@@ -30,16 +30,16 @@ if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != 
       <?php if (($_SESSION['Privilegio'] == "Administrador")) { ?>
 
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/Peliculas.php"> Administrar Peliculas |֎|</a>
-        <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/InformeUsuarios.php"> Administrar Usuarios |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/AdministrarUsuarios.php"> Administrar Usuarios |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/InformePeliculas.php"> Informe de Peliculas |֎|</a>
-        <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/InformeVentas.php"> Informe Administrativo |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/InformeAdministrativo.php"> Informe Administrativo |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Include/CerrarSession.php">Cerrar Sesion |֎|</a>
 
       <?php } elseif ($_SESSION['Privilegio'] == "Usuario") { ?>
 
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/Cartelera.php"> Cartelera |֎|</a>
-        <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/ProximaCartelera.php"> Proximas Peliculas |֎|</a>
-        <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/AnularBoleto.php"> Anular Reserva |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/ProximasPeliculas.php"> Proximas Peliculas |֎|</a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/AnularReserva.php"> Anular Reserva |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Include/CerrarSession.php">Cerrar Sesion |֎|</a>
 
       <?php }

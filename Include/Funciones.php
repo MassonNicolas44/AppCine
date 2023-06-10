@@ -285,7 +285,7 @@ function AccionUsuario($db, $habilitada = null, $noHabilitada = null, $idUsuario
   mysqli_query($db, $sql);
 
   //Recarga la misma pagina
-  header("Location:Administrador/InformeUsuarios.php");
+  header("Location:AdministrarUsuarios.php");
 
 }
 
@@ -328,7 +328,7 @@ $sql= "UPDATE proyecciones SET Anulada='Si' WHERE IdVenta='$IdVenta'";
 
 $resultado=mysqli_query($db, $sql);
 
-header("Location:Usuario/AnularBoleto.php");
+header("Location:AnularReserva.php");
 
   }
 
@@ -526,8 +526,8 @@ function ComprobacionUsuarioExiste($db,$usuario,$email){
     function RegistrarBoleto($db,$IdPelicula,$IdUsuario,$fechaPelicula,$horaPelicula,$CantidadBoleto,$PrecioFinal){
 
       //Sentencia para realizar el registro
-      $sql = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada) 
-      VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No')";
+      $sql = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada,fechaReserva) 
+      VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No',CURDATE())anul";
           
       //Ejecucion de la sentencia anterior
       mysqli_query($db,$sql);

@@ -277,5 +277,3 @@ if (isset($_POST['HabilitarPelicula'])) {
         }
     }
 </script>
-
-<?php

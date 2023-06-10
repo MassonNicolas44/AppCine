@@ -5,7 +5,7 @@ require_once "../fpdf/fpdf.php";
 
 session_start();
 
-
+$Total=0;
 
 if (!empty($_SESSION['txtFechaInicio']) && !empty($_SESSION['txtFechaFin'])) {
 
@@ -65,8 +65,15 @@ foreach ($listaBoletos as $Boletos) {
     $pdf->Cell(20, 6, $Boletos['habilitada'], 1, 0, "C");
     $pdf->Cell(22, 6, $Boletos['TotalBoleto'], 1, 0, "C");
     $pdf->Cell(27, 6, $Boletos['Recaudado'] . " $", 1, 1, "C");
+    $Total=$Total+$Boletos['Recaudado'];
 }
 
+//Muestra de la sumatoria de todos los precios
+$pdf->ln();
+$pdf->SetFont("Arial", "B", 16);
+$pdf->Cell(15, 6, "Total", 1, 0, "C");
+$pdf->Cell(147, 6, "", 1, 0, "B");
+$pdf->Cell(27, 6, $Total." $ ", 1, 1, "C");
 $pdf->Output();
 
 ?>

@@ -32,7 +32,6 @@ foreach ($listaPeliculas as $pelicula) {
   $PrecioUnico = $pelicula['precio'];
 }
 
-
 //En caso de seleccionar Mas, aumenta el contador
 //En caso de seleccionar Menos, disminuye el contador
 //En caso de seleccionar Reserva, se ingresa la compra del boleto con los datos correspondiente a la base de datos

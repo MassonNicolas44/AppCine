@@ -43,7 +43,7 @@ switch ($accion) {
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
                         $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                        move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+                        move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
                     } else {
                         $txtImagen = "NoImagen.jpeg";
                         $nombreArchivo = "NoImagen.jpeg";
@@ -74,7 +74,7 @@ switch ($accion) {
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
                         $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                        move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+                        move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
                     } else {
                         $txtImagen = "NoImagen.jpeg";
                         $nombreArchivo = "NoImagen.jpeg";
@@ -95,16 +95,16 @@ switch ($accion) {
     case "ModificarSeleccionar":
 
         //Comprobacion de que los campos no estan vacios
-        //if (
-         //   !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-         //   !empty($txtPrecio) && !empty($txtDescripcion)
-        //) {
+        if (
+            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+            !empty($txtPrecio) && !empty($txtDescripcion)
+        ) {
 
             //En caso de no modificar la imagen, no se modifica
             if ($txtImagen !== "") {
                 $nombreArchivo = $_FILES["txtImagen"]["name"];
                 $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+                move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
 
                 //Sentencia para actualizar registros con respecto a la tabla peliculas
                 ModificarPelicula($db, $Valor = "Peliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
@@ -117,27 +117,27 @@ switch ($accion) {
 
 
             header("Location:Peliculas.php");
-       // } else {
+        } else {
             $validarModificar = "Seleccionar";
-       //     echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
-       // }
+            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+        }
 
         break;
 
 
     case "ModificarSeleccionarProximaPelicula":
         //Comprobacion de que los campos no estan vacios
-        //if (
-        //    !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-        //    !empty($txtFecha)
-        //) {
+        if (
+            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+            !empty($txtFecha)
+        ) {
 
 
         //En caso de no modificar la imagen, no se modifica
         if ($txtImagen !== "") {
             $nombreArchivo = $_FILES["txtImagen"]["name"];
             $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-            move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+            move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
 
             //Sentencia para actualizar registros con respecto a la tabla peliculas
             ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
@@ -149,10 +149,10 @@ switch ($accion) {
         }
 
             header("Location:Peliculas.php");
-        //} else {
+        } else {
             $validarModificar = "SeleccionarProximaPelicula";
-        //    echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
-        //}
+            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
+        }
         break;
 
     case "Cancelar":
@@ -174,9 +174,9 @@ switch ($accion) {
         $txtPrecio = $SeleccionPelicula['precio'];
         $txtDescripcion = $SeleccionPelicula['descripcion'];
         $txtImagen = $SeleccionPelicula['imgResource'];
-
         $validarModificar = "Seleccionar";
         break;
+        
 
     case "Seleccionar ProximaPelicula":
 
@@ -197,10 +197,10 @@ switch ($accion) {
         break;
 
     case "Pasar a Cartelera":
-        //if (
-        //    !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-        //    !empty($txtPrecio) && !empty($txtDescripcion)
-        //) {
+        if (
+            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
+            !empty($txtPrecio) && !empty($txtDescripcion)
+        ) {
 
             
                //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
@@ -213,7 +213,7 @@ switch ($accion) {
                    if ($txtImagen != "") {
                        $nombreArchivo = $_FILES["txtImagen"]["name"];
                        $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-                       move_uploaded_file($tmpImagen, "img/" . $nombreArchivo);
+                       move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
                    } else {
                        $txtImagen = "NoImagen.jpeg";
                        $nombreArchivo = "NoImagen.jpeg";
@@ -228,10 +228,10 @@ switch ($accion) {
                 header("Location:Peliculas.php");
                }
 
-        //} else {
+        } else {
             $validarModificar = "SeleccionarProximaPelicula";
-        //    echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
-        //}
+            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+        }
         break;
 
     case "Borrar":
@@ -285,19 +285,23 @@ switch ($accion) {
                         <label>Restriccion Edad:</label>
                         <select name="txtrestriccionEdad">
 
-                            <?php 
-                            //Trae la lista de Restriccion Edad que esta guardada en la base de dato para asignarse al Select
-                            $listaRestriccionEdad = ListaPeliculas($db, "RestriccionEdad");
+                        
+                            <?php
+                                //Trae la lista de Restriccion Edad que esta guardada en la base de dato para asignarse al Select
+                                $listaRestriccionEdad = ListaPeliculas($db, "RestriccionEdad");
 
-                            foreach ($listaRestriccionEdad as $restriccionEdad) {
-                                ?>
-                                <option>
-                                    <?php echo $restriccionEdad['restriccionEdad'] ?>
-                                </option>
-                            <?php } ?>
+                                while ($restriccionEdad =mysqli_fetch_assoc($listaRestriccionEdad)):
 
-                        </select>
+                                        ?>
+                                    <option value="<?=$restriccionEdad['restriccionEdad']?>" <?= ($restriccionEdad['restriccionEdad'] == $txtrestriccionEdad) ? 'selected="selected"' : '' ?>> 
+                                        <?=$restriccionEdad['restriccionEdad']?>
+                                    </option>
+                                <?php
+                            endwhile;
+                            ?>                     
+                        </select>                       
 
+                        
                     </div>
                     <div class="form-group">
                         <label>Categoria:</label>
@@ -309,18 +313,22 @@ switch ($accion) {
                         <select name="txtTipo">
 
                             <?php 
-                            
+
+
                             //Trae la lista de Tipo que esta guardada en la base de dato para asignarse al Select
                             $listaTipo = ListaPeliculas($db, "Tipo");
-                            foreach ($listaTipo as $Tipo) {
 
+                            while ($Tipo =mysqli_fetch_assoc($listaTipo)):
                                 ?>
-                                <option>
-                                    <?php echo $Tipo['tipo'] ?>
-                                </option>
-                            <?php } ?>
-
+                                <option value="<?=$Tipo['tipo']?>" <?=($Tipo['tipo'] == $txtTipo) ? 'selected="selected"' : '' ?>>
+                                        <?=$Tipo['tipo']?>
+                                    </option>
+                                <?php                     
+                       endwhile;
+?>
+    
                         </select>
+
                     </div>
                     <div class="form-group">
                         <label>Precio:</label>
@@ -330,8 +338,9 @@ switch ($accion) {
 
                     <div class="form-group">
                         <label>Descripcion:</label>
-                        <p><textarea input type="text" class="form-control" value="<?php echo $txtDescripcion; ?>"
-                            name="txtDescripcion" placeholder="Ingresar descripcion" cols="34" rows="5"></textarea></p>
+                        <textarea input name="txtDescripcion" placeholder="Ingresar descripcion" cols="34" rows="5"><?php if (!empty($txtDescripcion)){
+                            echo $SeleccionPelicula['descripcion'];}?></textarea>
+
 
                     </div>
 
@@ -340,8 +349,8 @@ switch ($accion) {
                         <br />
                         <?php
                         if ($txtImagen != "") { ?>
-                            <img class="img-thumbnail rounded" src="../../../GamesOfMovies/img/<?php echo $txtImagen; ?>"
-                                width="70" alt="">
+                            <img class="img-thumbnail rounded" src="../../GamesOfMovies/img/<?php echo $txtImagen; ?>"
+                                width="300" alt="">
                         <?php } ?>
                         <input type="File" class="form-control" value="<?php echo $txtImagen ?>" name="txtImagen"
                             placeholder="Ingresar imagen">

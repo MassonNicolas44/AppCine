@@ -6,41 +6,8 @@ require_once "../Include/Funciones.php";
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
 $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
+$Total=0;
 
-if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == "Venta")) {
-
-    $_SESSION['TipoListaInforme'] = "Venta";
-    $listaVentas = ListaVentas($db);
-
-} elseif (($_SESSION['TipoListaInforme'] == "Recaudacion")) {
-
-    $_SESSION['TipoListaInforme'] = "Recaudacion";
-    $listaRecaudacion = ListaRecaudacion($db);
-
-} elseif ($_SESSION['TipoListaInforme'] == "Boleto") {
-
-    $_SESSION['TipoListaInforme'] = "Boleto";
-    $listaBoleto = ListaBoletos($db);
-
-}
-
-
-if (isset($_POST['ListaVenta'])) {
-
-    $_SESSION['TipoListaInforme'] = "Venta";
-    $listaVentas = ListaVentas($db);
-
-} elseif (isset($_POST['ListaRecaudacion'])) {
-
-    $_SESSION['TipoListaInforme'] = "Recaudacion";
-    $listaRecaudacion = ListaRecaudacion($db);
-
-} elseif (isset($_POST['ListaBoletos'])) {
-
-    $_SESSION['TipoListaInforme'] = "Boleto";
-    $listaBoleto = ListaBoletos($db);
-
-}
 
 //Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el correspondiente informe (teniendo en cuenta el rango de fecha)
 if (isset($_POST['SeleccionarFecha'])) {
@@ -67,7 +34,7 @@ if (isset($_POST['SeleccionarFecha'])) {
 
 }
 
-if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
+if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
 
     if(($txtFechaInicio!=$_SESSION['txtFechaInicio']) || ($txtFechaFin!=$_SESSION['txtFechaFin'])){
         $txtFechaInicio = "";
@@ -77,6 +44,66 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
         $_SESSION['txtFechaFin'] = $txtFechaFin;
     }
 }
+
+if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == "Venta")) {
+
+    $_SESSION['TipoListaInforme'] = "Venta";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaVentas = ListaVentas($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaVentas = ListaVentas($db);
+    }
+
+} elseif (($_SESSION['TipoListaInforme'] == "Recaudacion")) {
+
+    $_SESSION['TipoListaInforme'] = "Recaudacion";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaRecaudacion = ListaRecaudacion($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaRecaudacion = ListaRecaudacion($db);
+    }
+
+} elseif ($_SESSION['TipoListaInforme'] == "Boleto") {
+
+    $_SESSION['TipoListaInforme'] = "Boleto";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaBoleto = ListaBoletos($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaBoleto = ListaBoletos($db);
+    }
+    
+}
+
+
+if (isset($_POST['ListaVenta'])) {
+
+    $_SESSION['TipoListaInforme'] = "Venta";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaVentas = ListaVentas($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaVentas = ListaVentas($db);
+    }
+
+} elseif (isset($_POST['ListaRecaudacion'])) {
+
+    $_SESSION['TipoListaInforme'] = "Recaudacion";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaRecaudacion = ListaRecaudacion($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaRecaudacion = ListaRecaudacion($db);
+    }
+
+} elseif (isset($_POST['ListaBoletos'])) {
+
+    $_SESSION['TipoListaInforme'] = "Boleto";
+    if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
+        $listaBoleto = ListaBoletos($db,$txtFechaInicio,$txtFechaFin);
+    }else{
+        $listaBoleto = ListaBoletos($db);
+    }
+
+}
+
 
 
 ?>
@@ -93,7 +120,7 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
         <?php }
         ; ?>
         <div class="card-body">
-            <form action="InformeVentas.php" method="post">
+            <form action="InformeAdministrativo.php" method="post">
                 <div class="row">
                     <?php
                     if ($txtFechaInicio!="" && $txtFechaFin!="") {
@@ -241,8 +268,33 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
                                     <?php echo $Ventas['precioFinal'] ?> $
                                 </td>
                             </tr>
-                        <?php }
+                        <?php $Total=$Total+$Ventas['precioFinal']; }
                         ?>
+
+                            <tr>
+                                <td>
+                                <b><?php echo "Total" ?></b>
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                   <b> <?php echo $Total ?> $ </b>
+                                </td>
+                            </tr>
+
                     </tbody>
                 </table>
                 </tbody>
@@ -295,8 +347,32 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
                                 <?php echo $Recaudacion['Recaudado'] ?> $
                             </td>
                         </tr>
-                    <?php }
-                    ?>
+                        <?php $Total=$Total+$Recaudacion['Recaudado']; }
+                        ?>
+
+                            <tr>
+                                <td>
+                                <b><?php echo "Total" ?></b>
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                   <b> <?php echo $Total ?> $ </b>
+                                </td>
+                            </tr>
                 </tbody>
             </table>
             </tbody>
@@ -349,8 +425,32 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
                             <?php echo $Boletos['Recaudado'] ?> $
                         </td>
                     </tr>
-                <?php }
-                ?>
+                    <?php $Total=$Total+$Boletos['Recaudado']; }
+                        ?>
+
+                            <tr>
+                                <td>
+                                <b><?php echo "Total" ?></b>
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                   <b> <?php echo $Total ?> $ </b>
+                                </td>
+                            </tr>
             </tbody>
         </table>
         </tbody>
@@ -361,5 +461,3 @@ if ((!empty($txtFechaInicio)) && (!empty($txtFechaFin))) {
 <?php } ?>
 <br />
 </div>
-
-<?php
