@@ -37,6 +37,8 @@ if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != 
 
       <?php } elseif ($_SESSION['Privilegio'] == "Usuario") { ?>
 
+        <H3> Bienvenido <?php echo "".$_SESSION['NombreUsuario']." ". $_SESSION['ApellidoUsuario'] ?>  </H3>
+        <a class="nav-item nav-link"> |֎| </a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/Cartelera.php"> Cartelera |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/ProximasPeliculas.php"> Proximas Peliculas |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/AnularReserva.php"> Anular Reserva |֎|</a>

@@ -297,7 +297,7 @@ function DatosReserva($db,$Fecha,$Hora,$IdPelicula){
   $sql="SELECT Sum(pr.CantBoleto) AS Disponibilidad,pr.fechaPelicula,pr.horaPelicula,pe.IdPelicula 
   FROM proyecciones AS pr 
   INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula 
-  WHERE pr.fechaPelicula='$Fecha' AND pr.horaPelicula='$Hora' AND pe.IdPelicula=$IdPelicula";
+  WHERE pr.fechaPelicula='$Fecha' AND pr.horaPelicula='$Hora' AND pr.Anulada LIKE 'No' AND pe.IdPelicula=$IdPelicula";
 
   $resultado=mysqli_query($db,$sql);
 
@@ -324,7 +324,7 @@ function AnularBoleto($db,$NombreUsuario=null,$Valor=null,$IdVenta=null){
 
   }elseif ($Valor == "AnularVenta"){
 
-$sql= "UPDATE proyecciones SET Anulada='Si' WHERE IdVenta='$IdVenta'";
+$sql= "UPDATE proyecciones SET Anulada='Si',fechaReserva=null WHERE IdVenta='$IdVenta'";
 
 $resultado=mysqli_query($db, $sql);
 
@@ -432,15 +432,22 @@ function ComprobacionLogin($usuario, $contrasenia, $db){
   //Sentencia para seleccionar todos los datos de la tabla Usuarios de la base de datos para verificar que el usuario esta habilitado
   $sql = "SELECT * FROM usuarios 
     WHERE habilitado like 'Si' AND
-    usuario='$usuario' AND contraseña='$contrasenia'";
+    usuario='$usuario'";
 
   //Ejecucion de la Sentencia anterior
   $login = mysqli_query($db, $sql);
 
   $DatosUsuario = mysqli_fetch_assoc($login);
 
+    // Verificar si la contraseña coincide
+  if (password_verify($contrasenia, $DatosUsuario['contraseña'])) {
+      $Validado=true;
+  } else {
+      $Validado=false;
+  }
+
   //En caso que se encuentren los datos ingresados dentro de la base de Datos y exista 1 solo. Se procede a guardar los datos en las Sessiones
-  if ($login = true && mysqli_num_rows($login) == 1) {
+  if ($Validado == true && mysqli_num_rows($login) == 1) {
 
     $_SESSION['IdUsuario'] = $DatosUsuario["IdUsuario"];
     $_SESSION['NombreUsuario'] = $DatosUsuario["nombre"];
@@ -460,7 +467,7 @@ function ComprobacionLogin($usuario, $contrasenia, $db){
 
     //Si no se encuentra el usuario ingresado con todos los usuarios dentro de la base de Datos, se indica un mensaje
   } else {
-    echo "<script> alert('Usuario No Encontrado'); </script>";
+    echo "<script> alert('Usuario/Contraseña No Coincide'); </script>";
   }
 }
 
@@ -504,11 +511,14 @@ function ComprobacionUsuarioExiste($db,$usuario,$email){
 //*********************************          Registrar Usuario en la Base de Datos         ****************************************** */
 
   //Funcion para Registrar un Usuario en la Base de Datos
-  function RegistrarUsuario($db,$nombre,$usuario,$telefono,$email,$contrasenia){
+  function RegistrarUsuario($db,$nombre,$apellido,$usuario,$telefono,$email,$contrasenia){
+
+$contrasenia_cifrada=password_hash($contrasenia, PASSWORD_BCRYPT,['cost'=>4]);
+
 
     //Sentencia para realizar el registro
-    $sql = "INSERT INTO usuarios(nombre, usuario,telefono, email,contraseña,habilitado,privilegio)
-    VALUES ('$nombre','$usuario','$telefono','$email','$contrasenia','Si','Usuario')";
+    $sql = "INSERT INTO usuarios(nombre, apellido, usuario,telefono, email,contraseña,habilitado,privilegio)
+    VALUES ('$nombre','$apellido','$usuario','$telefono','$email','$contrasenia_cifrada','Si','Usuario')";
         
     //Ejecucion de la sentencia anterior
     mysqli_query($db,$sql);
@@ -527,13 +537,20 @@ function ComprobacionUsuarioExiste($db,$usuario,$email){
 
       //Sentencia para realizar el registro
       $sql = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada,fechaReserva) 
-      VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No',CURDATE())anul";
+      VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No',CURDATE())";
           
       //Ejecucion de la sentencia anterior
       mysqli_query($db,$sql);
-  
+
+
+$Direccion =$_SESSION['url']."/Usuario/Cartelera.php"; //ESTA ES LA ALERTA
+
       //Envio a la pagina de la Cartelera
-      header("location:Cartelera.php");
+echo "<script>";
+echo "alert('Felicitaciones por reservar, Que disfrute la Pelicula');";
+echo "window.location.href = '$Direccion'";
+echo "</script>";
+
     }
 
 

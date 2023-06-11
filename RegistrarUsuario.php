@@ -5,6 +5,7 @@ require_once "Include/Funciones.php";
 
 //Variables a utilizar
 $nombre = (isset($_POST['nombre'])) ? $_POST['nombre'] : "";
+$apellido = (isset($_POST['apellido'])) ? $_POST['apellido'] : "";
 $usuario = (isset($_POST['usuario'])) ? $_POST['usuario'] : "";
 $telefono = (isset($_POST['telefono'])) ? $_POST['telefono'] : "";
 $email = (isset($_POST['email'])) ? $_POST['email'] : "";
@@ -14,6 +15,7 @@ $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 if (isset($_POST['registrar'])) {
   if (
     isset($_POST["nombre"]) && !empty($_POST["nombre"]) &&
+    isset($_POST["apellido"]) && !empty($_POST["apellido"]) &&
     isset($_POST["usuario"]) && !empty($_POST["usuario"]) &&
     isset($_POST["telefono"]) && !empty($_POST["telefono"]) &&
     isset($_POST["email"]) && !empty($_POST["email"]) &&
@@ -33,7 +35,7 @@ if (isset($_POST['registrar'])) {
       echo "<script> alert('Ya existe un Usuario con este Email'); </script>";
     } elseif ($ExisteUsuario == false && $ExisteEmail == false) {
       //Sentencia para insertar un nuevo usuario a la base de datos desde Android
-      RegistrarUsuario($db,$nombre,$usuario,$telefono,$email,$contrasenia);
+      RegistrarUsuario($db,$nombre,$apellido,$usuario,$telefono,$email,$contrasenia);
     }
   } else {
     echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
@@ -78,15 +80,20 @@ if (isset($_POST['registrar'])) {
           <div class="card-body">
             <form action="RegistrarUsuario.php" method="post">
               Nombre: <input class="form-control" value="<?php echo $nombre ?>" type="text" name="nombre" id="">
-              <br />
+
+              Apellido: <input class="form-control" value="<?php echo $apellido ?>" type="text" name="apellido" id="">
+
               Usuario: <input class="form-control" value="<?php echo $usuario ?>" type="text" name="usuario" id="">
-              <br />
+
               Telefono: <input class="form-control" value="<?php echo $telefono ?>" type="number" name="telefono" id="">
-              <br />
+
               Email: <input class="form-control" value="<?php echo $email ?>" type="text" name="email" id="">
-              <br />
-              Contraseña: <input class="form-control" value="<?php echo $contrasenia ?>" type="password"
-                name="contrasenia" id="">
+
+
+              Contraseña: <input class="form-control" value="<?php echo $contrasenia ?>" type="password" name="contrasenia" id="password">
+                <button class="btn btn-link" type="button" onclick="mostrarContrasena()">Mostrar Contraseña</button>
+
+
               <br />
               <button class="btn btn-success" type="submit" name="registrar">Registrar</button>
               <button class="btn btn-success" type="submit" name="cancelar">Cancelar</button>
@@ -99,5 +106,16 @@ if (isset($_POST['registrar'])) {
     </div>
   </div>
 </body>
+
+<script>
+  function mostrarContrasena(){
+      $tipo = document.getElementById("password");
+      if($tipo.type == "password"){
+          $tipo.type = "text";
+      }else{
+          $tipo.type = "password";
+      }
+  }
+</script> 
 
 </html>
