@@ -453,6 +453,7 @@ function ComprobacionLogin($usuario, $contrasenia, $db){
     $_SESSION['NombreUsuario'] = $DatosUsuario["nombre"];
     $_SESSION['ApellidoUsuario'] = $DatosUsuario["apellido"];
     $_SESSION['Usuario'] = $DatosUsuario["usuario"];
+    $_SESSION['Telefono'] = $DatosUsuario["telefono"];
     $_SESSION['EmailUsuario'] = $DatosUsuario["email"];
     $_SESSION['Privilegio'] = $DatosUsuario["privilegio"];
 
@@ -527,6 +528,55 @@ $contrasenia_cifrada=password_hash($contrasenia, PASSWORD_BCRYPT,['cost'=>4]);
     header("location:Login.php");
   }
 
+
+  //*********************************          Modificar Usuario en la Base de Datos         ****************************************** */
+
+  //Funcion para Registrar un Usuario en la Base de Datos
+  function ModificarUsuario($db,$nombre,$apellido,$usuario,$telefono,$email,$contrasenia){
+
+    $contrasenia_cifrada=password_hash($contrasenia, PASSWORD_BCRYPT,['cost'=>4]);
+    
+
+    $sql1 = "SELECT usuario FROM usuarios";
+    $txtUsuario2 = "";
+    $ExisteUsuario = false;
+    $resultado=mysqli_query($db,$sql1);
+
+    //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
+    foreach ($resultado as $NuevoUsuario) {
+      $txtUsuario2 = $NuevoUsuario['usuario'];
+
+      //Comparacion entre el Titulo a ingresar y cada titulo que existe en la Base de Datos
+      if ($usuario == $txtUsuario2) {
+        $ExisteUsuario = true;
+      }
+    }
+
+ 
+    if ($ExisteUsuario==true){
+      echo "<script> alert('Usuario ya existe'); </script>";
+    }else{
+
+
+        $IdUsuario=$_SESSION['IdUsuario'];
+        //Sentencia para realizar el registro
+        $sql="UPDATE usuarios SET nombre='$nombre',apellido='$apellido',usuario='$usuario',telefono='$telefono',email='$email',contraseña='$contrasenia_cifrada'
+        WHERE idUsuario='$IdUsuario'";
+            
+        //Ejecucion de la sentencia anterior
+        mysqli_query($db,$sql);    
+
+        //Actualizar valores de Session activa
+        $_SESSION['NombreUsuario'] = $nombre;
+        $_SESSION['ApellidoUsuario'] = $apellido;
+        $_SESSION['Usuario'] = $usuario;
+        $_SESSION['Telefono'] = $telefono;
+        $_SESSION['EmailUsuario'] = $email;
+
+        //Envio a la pagina del login
+        header("location:Cartelera.php");
+      }
+    }
 
 
   

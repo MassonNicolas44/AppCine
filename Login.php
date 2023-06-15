@@ -10,7 +10,6 @@ $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 
 Url($db);
 
-
 //En caso de seleccionar "Ingresar" verifica que las casillas no estan vacias ni tengan espacios
 if (isset($_POST['ingresar'])) {
   ComprobacionLogin($usuario, $contrasenia, $db);

@@ -38,8 +38,8 @@ if (isset($_POST['HabilitarUsuario'])) {
                     <tr>
                         <th>Id</th>
                         <th>Usuario</th>
-                        <th>contraseña</th>
                         <th>Nombre</th>
+                        <th>Apellido</th>
                         <th>Telefono</th>
                         <th>Email</th>
                         <th>Habilitado</th>
@@ -59,10 +59,10 @@ if (isset($_POST['HabilitarUsuario'])) {
                                 <?php echo $Usuarios['usuario'] ?>
                             </td>
                             <td>
-                                <?php echo $Usuarios['contraseña'] ?>
+                                <?php echo $Usuarios['nombre'] ?>
                             </td>
                             <td>
-                                <?php echo $Usuarios['nombre'] ?>
+                                <?php echo $Usuarios['apellido'] ?>
                             </td>
                             <td>
                                 <?php echo $Usuarios['telefono'] ?>

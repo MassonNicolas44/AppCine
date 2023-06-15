@@ -29,6 +29,8 @@ if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != 
 
       <?php if (($_SESSION['Privilegio'] == "Administrador")) { ?>
 
+        <H3 > Bienvenido <?php echo "".$_SESSION['NombreUsuario']." ". $_SESSION['ApellidoUsuario'] ?>  </H3>
+        <a class="nav-item nav-link"> |֎| </a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/Peliculas.php"> Administrar Peliculas |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/AdministrarUsuarios.php"> Administrar Usuarios |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Administrador/InformePeliculas.php"> Informe de Peliculas |֎|</a>
@@ -39,6 +41,7 @@ if (($_SESSION['Privilegio'] != "Administrador") && ($_SESSION['Privilegio'] != 
 
         <H3> Bienvenido <?php echo "".$_SESSION['NombreUsuario']." ". $_SESSION['ApellidoUsuario'] ?>  </H3>
         <a class="nav-item nav-link"> |֎| </a>
+        <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/ModificarUsuario.php"> Modificar Datos |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/Cartelera.php"> Cartelera |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/ProximasPeliculas.php"> Proximas Peliculas |֎|</a>
         <a class="nav-item nav-link" href="<?php echo $url; ?>/Usuario/AnularReserva.php"> Anular Reserva |֎|</a>
