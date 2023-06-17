@@ -141,7 +141,7 @@ function ListaPeliculas($db, $Valor = null, $txtID = null, $Titulo = null)
 
       //Caso en el cual se quiere seleccionar solo las Peliculas habilitadas
     }elseif ($Valor == "Habilitada") {
-      $Peliculas = "SELECT * FROM peliculas WHERE habilitada like 'Si'";
+      $Peliculas = "SELECT * FROM peliculas WHERE habilitada like 'Si' LIMIT 5";
     }
   }
 
@@ -191,7 +191,7 @@ function ListaProximasPeliculas($db, $Valor = null, $txtID = null, $Titulo = nul
 
     } if ($Valor == "Habilitada") {
 
-      $ProximasPeliculas = "SELECT * FROM proximaspeliculas WHERE habilitada LIKE 'Si'";
+      $ProximasPeliculas = "SELECT * FROM proximaspeliculas WHERE habilitada LIKE 'Si' LIMIT 5";
 
     }else {
 
