@@ -4,19 +4,40 @@ require_once "Include/Funciones.php";
 
 session_start();
 
+$errores=array();
+
 //Variables a Utilizar
 $usuario = (isset($_POST['usuario'])) ? $_POST['usuario'] : "";
 $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 
 Url($db);
 
-//En caso de seleccionar "Ingresar" verifica que las casillas no estan vacias ni tengan espacios
-if (isset($_POST['ingresar'])) {
-  ComprobacionLogin($usuario, $contrasenia, $db);
-} elseif (isset($_POST['registrar'])) {
-  header("location:RegistrarUsuario.php");
+if (empty($usuario)){ 
+  $errores['usuario']="Usuario vacio";
+}
+if (empty($contrasenia)){
+  $errores['contrasenia']="Contrasenia vacio";
 }
 
+if (count($errores)==0){
+  
+  //En caso de seleccionar "Ingresar" verifica que las casillas no estan vacias ni tengan espacios
+  if (isset($_POST['ingresar'])) {
+    ComprobacionLogin($usuario, $contrasenia, $db);
+
+    $errores2=ComprobacionLogin($usuario,$contrasenia,$db);
+
+  } 
+  $_SESSION['errores']=$errores2;
+}else{
+  $_SESSION['errores']=$errores;
+  //header("location:Login.php");
+}
+
+if (isset($_POST['registrar'])) {
+  header("location:RegistrarUsuario.php");
+}
+ 
 ?>
 <!doctype html>
 <html lang="en">
@@ -49,11 +70,23 @@ if (isset($_POST['ingresar'])) {
           </div>
           <div class="card-body">
             <form action="Login.php" method="post">
+
+            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'ExistenciaUsuario') : '' ;?>
+
               Usuario: <input class="form-control" value="<?php echo $usuario; ?>" type="text" name="usuario" id="">
+
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'usuario') : '' ;?>
+
               <br />
-              Contraseña: <input class="form-control" value="<?php echo $contrasenia; ?>" type="password"
-                name="contrasenia" id="">
+              Contraseña: <input class="form-control" value="<?php echo $contrasenia; ?>" type="password" name="contrasenia" id="">
+
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'contrasenia') : '' ;?>
+
               <br />
+
+              <?php echo !empty($errores2) ? MostrarErrores($_SESSION['errores'],'ExisteUsuario') : '' ;?>
+              <?php echo !empty($errores2) ? MostrarErrores($_SESSION['errores'],'ExisteContrasenia') : '' ;?>
+
               <button class="btn btn-success" type="submit" name="ingresar">Ingresar</button>
               <button class="btn btn-success" type="submit" name="registrar">Registrar</button>
             </form>
@@ -64,5 +97,7 @@ if (isset($_POST['ingresar'])) {
     </div>
   </div>
 </body>
+
+<?php BorrarErrores(); ?>
 
 </html>

@@ -12,14 +12,6 @@ $FechaBD = date('d-m-Y', strtotime($FechaFinal));
 //Lista de las Peliculas en cartelera, Recopilada desde la Base de Datos
 $listaPeliculas = ListaPeliculas($db,"Habilitada");
 
-//Sentencia para la recolecciones de informacion teniendo en cuenta la pelicula, fecha y hora seleccionada antes de pasar a esta pagina
-$datosPelicula = DatosReserva($db,$fechaPelicula,$horaPelicula,$IdPelicula);
-
-//Guarda en una variable la suma de todos los boletos de la pelicula seleccionada
-foreach ($datosPelicula as $datosPelicula2) {
-  $CantBoleto = $datosPelicula2['Disponibilidad'];
-}
-
 
 //Condicionales, en el cual se guarda en la Session las variables de Cartelera-IdPelicula-HoraPelicula-FechaPelicula, que son utilizadas al cambiar de pagina
 if (isset($_POST['16hs'])) {
@@ -123,8 +115,6 @@ if (isset($_POST['16hs'])) {
             <label>Horario Pelicula:</label>
             <div class="col">
               
-<?php  var_dump($CantBoleto);?>
-
               <button class="btn btn-primary" type="submit" name="16hs">16 hs</button>
               <label>-----------</label>
               <button class="btn btn-primary" type="submit" name="19hs">19 hs</button>

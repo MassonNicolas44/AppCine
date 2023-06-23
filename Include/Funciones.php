@@ -429,6 +429,12 @@ function ListaBoletos($db, $FechaInicio = null, $FechaFin = null){
 //Funcion para comprobar si existen los datos ingresados dentro de la Base de Datos
 function ComprobacionLogin($usuario, $contrasenia, $db){
 
+
+  $ExisteContrasenia=false;
+
+  $errores2=array();
+
+
   //Sentencia para seleccionar todos los datos de la tabla Usuarios de la base de datos para verificar que el usuario esta habilitado
   $sql = "SELECT * FROM usuarios 
     WHERE habilitado like 'Si' AND
@@ -439,37 +445,40 @@ function ComprobacionLogin($usuario, $contrasenia, $db){
 
   $DatosUsuario = mysqli_fetch_assoc($login);
 
+
+  if (!empty($DatosUsuario)){
+  
     // Verificar si la contraseña coincide
-  if (password_verify($contrasenia, $DatosUsuario['contraseña'])) {
-      $Validado=true;
-  } else {
-      $Validado=false;
-  }
-
-  //En caso que se encuentren los datos ingresados dentro de la base de Datos y exista 1 solo. Se procede a guardar los datos en las Sessiones
-  if ($Validado == true && mysqli_num_rows($login) == 1) {
-
-    $_SESSION['IdUsuario'] = $DatosUsuario["IdUsuario"];
-    $_SESSION['NombreUsuario'] = $DatosUsuario["nombre"];
-    $_SESSION['ApellidoUsuario'] = $DatosUsuario["apellido"];
-    $_SESSION['Usuario'] = $DatosUsuario["usuario"];
-    $_SESSION['Telefono'] = $DatosUsuario["telefono"];
-    $_SESSION['EmailUsuario'] = $DatosUsuario["email"];
-    $_SESSION['Privilegio'] = $DatosUsuario["privilegio"];
-
-    //Si el Usuario tiene Privilegio de Usuario se pasa a la Pagina y Cabecera que Corresponda
-    if ($DatosUsuario["privilegio"] == "Usuario") {
-      header("location:Usuario/Cartelera.php");
-
-    //Si el Usuario tiene Privilegio de Administrador se pasa a la Pagina y Cabecera que Corresponda
-    } elseif ($DatosUsuario["privilegio"] == "Administrador") {
-      header("location:Administrador/Peliculas.php");
+    if (password_verify($contrasenia, $DatosUsuario['contraseña'])) {
+      $ExisteContrasenia=true;
+    }else{
+      $errores2['ExisteContrasenia']="No Coincide Contrasenia";
     }
-
-    //Si no se encuentra el usuario ingresado con todos los usuarios dentro de la base de Datos, se indica un mensaje
-  } else {
-    echo "<script> alert('Usuario/Contraseña No Coincide'); </script>";
+  
+    //En caso que se encuentren los datos ingresados dentro de la base de Datos y exista 1 solo. Se procede a guardar los datos en las Sessiones
+    if ($ExisteContrasenia == true && mysqli_num_rows($login) == 1) {
+      $_SESSION['IdUsuario'] = $DatosUsuario["IdUsuario"];
+      $_SESSION['NombreUsuario'] = $DatosUsuario["nombre"];
+      $_SESSION['ApellidoUsuario'] = $DatosUsuario["apellido"];
+      $_SESSION['Usuario'] = $DatosUsuario["usuario"];
+      $_SESSION['Telefono'] = $DatosUsuario["telefono"];
+      $_SESSION['EmailUsuario'] = $DatosUsuario["email"];
+      $_SESSION['Privilegio'] = $DatosUsuario["privilegio"];
+    
+      //Si el Usuario tiene Privilegio de Usuario se pasa a la Pagina y Cabecera que Corresponda
+      if ($DatosUsuario["privilegio"] == "Usuario") {
+        header("location:Usuario/Cartelera.php");
+    
+      //Si el Usuario tiene Privilegio de Administrador se pasa a la Pagina y Cabecera que Corresponda
+      } elseif ($DatosUsuario["privilegio"] == "Administrador") {
+        header("location:Administrador/Peliculas.php");
+      }  
+    }
+  }else{
+    $errores2['ExisteUsuario']="Usuario No Encontrado";
   }
+
+  return $errores2;
 }
 
 
@@ -604,5 +613,28 @@ echo "</script>";
     }
 
 
+
+
+      //*********************************            Mostrar Errores           ****************************************** */
+
+function MostrarErrores($errores,$campo){
+  $alerta='';
+  if (isset($errores[$campo]) && !empty($campo)){
+    $alerta= "<div class='alerta alerta-error'>".$errores[$campo].'</div>';
+  }
+  return $alerta;
+}
+
+
+      //*********************************            Borrar Errores           ****************************************** */
+
+      function BorrarErrores(){
+
+        $_SESSION['errores']=null;
+
+        unset($_SESSION['errores']);
+
+      }
+      
     
 ?>
