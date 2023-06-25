@@ -37,22 +37,18 @@ if (isset($_POST['Peliculas'])) {
 if (isset($_POST['HabilitarPelicula'])) {
 
     AccionPelicula($db, 'Si', null, $IdPelicula, null);
-    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['InhabilitarPelicula'])) {
 
     AccionPelicula($db, null, 'No', $IdPelicula, null);
-    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['HabilitarProximasPeliculas'])) {
 
     AccionPelicula($db, 'Si', null, null, $IdProximasPelicula);
-    header("Location:InformePeliculas.php");
 
 } elseif (isset($_POST['InhabilitarProximasPeliculas'])) {
 
     AccionPelicula($db, null, 'No', null, $IdProximasPelicula);
-    header("Location:InformePeliculas.php");
 
 }
 
@@ -110,6 +106,10 @@ if (isset($_POST['HabilitarPelicula'])) {
             ?>
             <div class="card-header"><em>Peliculas</em></div>
             <div class="card-body">
+
+            <?php echo isset($_SESSION['HabilitarPelicula']) ? $_SESSION['HabilitarPelicula'] : '' ;?>
+            <?php echo isset($_SESSION['InhabilitarPelicula']) ? $_SESSION['InhabilitarPelicula'] : '' ;?>
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -186,6 +186,10 @@ if (isset($_POST['HabilitarPelicula'])) {
             ?>
         <div class="card-header"><em>Proximas Peliculas</em></div>
         <div class="card-body">
+
+            <?php echo isset($_SESSION['HabilitarProximaPelicula']) ? $_SESSION['HabilitarProximaPelicula'] : '' ;?>
+            <?php echo isset($_SESSION['InhabilitarProximaPelicula']) ? $_SESSION['InhabilitarProximaPelicula'] : '' ;?>
+
             <table class="table table-bordered">
                 <thead>
                     <tr>

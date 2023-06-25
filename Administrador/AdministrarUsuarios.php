@@ -6,9 +6,7 @@ require_once "../Include/Cabecera.php";
 //Variables a utilizar
 $IdUsuario = (isset($_POST['idUsuario'])) ? $_POST['idUsuario'] : "";
 
-
 $listaUsuarios=ListaUsuarios($db);
-
 
 if (isset($_POST['HabilitarUsuario'])) {
 
@@ -20,19 +18,30 @@ if (isset($_POST['HabilitarUsuario'])) {
 
 }
 
+
+
 ?>
 
 <br />
 
 <div class="container">
     <div class="card">
-        <div class="card-header"><em>Usuarios</em></div>
+        <div class="card-header"><em>Usuarios</em>
+    </div>
+        
         <div class="card-header">
             <form action="InformeUsuarios.php" method="post">
+
             <a href="<?php echo $_SESSION['url']; ?>/Imprimir/Usuarios.php" class="btn btn-info" target='_blank'> Imprimir Informe </a>
+            
             </form>
         </div>
+        
         <div class="card-body">
+
+            <?php echo isset($_SESSION['HabilitarUsuario']) ? $_SESSION['HabilitarUsuario'] : '' ;?>
+            <?php echo isset($_SESSION['InhabilitarUsuario']) ? $_SESSION['InhabilitarUsuario'] : '' ;?>
+            
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -112,5 +121,3 @@ if (isset($_POST['HabilitarUsuario'])) {
         }
     }
 </script>
-
-<?php

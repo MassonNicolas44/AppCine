@@ -12,27 +12,30 @@ $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 
 Url($db);
 
-if (empty($usuario)){ 
-  $errores['usuario']="Usuario vacio";
-}
-if (empty($contrasenia)){
-  $errores['contrasenia']="Contrasenia vacio";
-}
 
-if (count($errores)==0){
-  
-  //En caso de seleccionar "Ingresar" verifica que las casillas no estan vacias ni tengan espacios
-  if (isset($_POST['ingresar'])) {
-    ComprobacionLogin($usuario, $contrasenia, $db);
+if (isset($_POST['ingresar'])) {
+  if (empty(trim($usuario))){ 
+    $errores['usuario']="Usuario vacio";
+  }
+  if (empty(trim($contrasenia))){
+    $errores['contrasenia']="Contrasenia vacio";
+  }
 
-    $errores2=ComprobacionLogin($usuario,$contrasenia,$db);
+  if (count($errores)==0){
+    
+    //En caso de seleccionar "Ingresar" verifica que las casillas no estan vacias ni tengan espacios
 
-  } 
-  $_SESSION['errores']=$errores2;
-}else{
-  $_SESSION['errores']=$errores;
-  //header("location:Login.php");
-}
+      ComprobacionLogin($usuario, $contrasenia, $db);
+
+      $errores2=ComprobacionLogin($usuario,$contrasenia,$db);
+
+
+    $_SESSION['errores']=$errores2;
+  }else{
+    $_SESSION['errores']=$errores;
+    //header("location:Login.php");
+  }
+} 
 
 if (isset($_POST['registrar'])) {
   header("location:RegistrarUsuario.php");

@@ -4,6 +4,8 @@ require_once "../Include/Conexion.php";
 require_once "../Include/Funciones.php";
 require_once "../Include/Cabecera.php";
 
+$errores=array();
+
 //Variables a utilizar
 $nombre = (isset($_POST['nombre'])) ? $_POST['nombre'] : "";
 $apellido = (isset($_POST['apellido'])) ? $_POST['apellido'] : "";
@@ -15,32 +17,49 @@ $contrasenia = (isset($_POST['contrasenia'])) ? $_POST['contrasenia'] : "";
 
 //En caso de selecionar el boton de registrar, luego se comprueba que ningun valor esta vacio ni nulo ni con espacios en blanco
 if (isset($_POST['modificar'])) {
-  if (
-    isset($_POST["nombre"]) && !empty($_POST["nombre"]) &&
-    isset($_POST["apellido"]) && !empty($_POST["apellido"]) &&
-    isset($_POST["usuario"]) && !empty($_POST["usuario"]) &&
-    isset($_POST["telefono"]) && !empty($_POST["telefono"]) &&
-    isset($_POST["email"]) && !empty($_POST["email"]) &&
-    isset($_POST["contrasenia"]) && !empty($_POST["contrasenia"])
-  ) {
+
+  if (empty(trim($nombre))){ 
+    $errores['nombre']="Nombre vacio";
+  }
+
+  if (empty(trim($apellido))){ 
+    $errores['apellido']="Apellido vacio";
+  }
+
+  if (empty(trim($usuario))){ 
+    $errores['usuario']="Usuario vacio";
+  }
+
+  if (empty(trim($telefono))){ 
+    $errores['telefono']="Telefono vacio";
+  }
+
+  if (empty(trim($email))){ 
+    $errores['email']="Email vacio";
+  }
+
+  if (empty(trim($contrasenia))){ 
+    $errores['contrasenia']="Contrasenia vacio";
+  }
+
+  if (count($errores)==0){
 
     //Recolecta todos los datos de la tabla usuarios
     $ListaUsuarios = ComprobacionUsuarioExiste($db,$usuario,$email);
-    list($ExisteEmail,$ExisteUsuario)=ComprobacionUsuarioExiste($db,$usuario,$email);
+    $errores2=ComprobacionUsuarioExiste($db,$usuario,$email);
     
-
     //En caso que exista el nombre de usuario y/o mail, mostrara un mensaje indicando que ya existe el usuario
     //Caso contrario se procede a insertar el usuario en la base de datos, con los datos correspondientes
-    if ($ExisteUsuario == true) {
-      echo "<script> alert('Ya existe un Usuario con este Nombre'); </script>";
-    } elseif ($ExisteEmail == true) {
-      echo "<script> alert('Ya existe un Usuario con este Email'); </script>";
-    } elseif ($ExisteUsuario == false && $ExisteEmail == false) {
-      //Sentencia para insertar un nuevo usuario a la base de datos desde Android
+    if (count($errores2)==0){
+
       ModificarUsuario($db,$nombre,$apellido,$usuario,$telefono,$email,$contrasenia);
+
+    }else{
+      $_SESSION['errores']=$errores2;
     }
-  } else {
-    echo "<script> alert('No dejar cacillero/s vacio/s'); </script>";
+    
+  }else{
+    $_SESSION['errores']=$errores;
   }
 
 } elseif (isset($_POST['cancelar'])) {
@@ -83,18 +102,31 @@ if (isset($_POST['modificar'])) {
             <form action="ModificarUsuario.php" method="post">
               Nombre: <input class="form-control" value="<?php echo $_SESSION['NombreUsuario'] ?>" type="text" name="nombre" id="">
 
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'nombre') : '' ;?>
+
               Apellido: <input class="form-control" value="<?php echo $_SESSION['ApellidoUsuario'] ?>" type="text" name="apellido" id="">
+
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'apellido') : '' ;?>
 
               Usuario: <input class="form-control" value="<?php echo $_SESSION['Usuario'] ?>" type="text" name="usuario" id="">
 
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'usuario') : '' ;?>
+
               Telefono: <input class="form-control" value="<?php echo $_SESSION['Telefono']  ?>" type="number" name="telefono" id="">
+
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'telefono') : '' ;?>
 
               Email: <input class="form-control" value="<?php echo $_SESSION['EmailUsuario'] ?>" type="text" name="email" id="">
 
+              <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'email') : '' ;?>
 
               Contraseña: <input class="form-control" value="<?php echo $contrasenia ?>" type="password" name="contrasenia" id="password">
                 <button class="btn btn-link" type="button" onclick="mostrarContrasena()">Mostrar Contraseña</button>
 
+                <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'contrasenia') : '' ;?>
+
+                <?php echo !empty($errores2) ? MostrarErrores($_SESSION['errores'],'ExisteUsuario') : '' ;?>
+                <?php echo !empty($errores2) ? MostrarErrores($_SESSION['errores'],'ExisteEmail') : '' ;?>
 
               <br />
               <button class="btn btn-success" type="submit" name="modificar">Modificar</button>
@@ -119,5 +151,7 @@ if (isset($_POST['modificar'])) {
       }
   }
 </script> 
+
+<?php BorrarErrores(); ?>
 
 </html>

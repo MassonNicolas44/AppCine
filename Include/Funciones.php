@@ -235,29 +235,67 @@ function ListaProximasPeliculas($db, $Valor = null, $txtID = null, $Titulo = nul
 //Funcion para Habiltiar o No Habilitar Peliculas o Proximas Peliculas para que se puedan ver en la Pagina Web
 function AccionPelicula($db, $habilitada = null, $noHabilitada = null, $idPelicula = null, $IdProximasPelicula = null){
 
+  //Borrado de Variables de SESSION, para que no se superpongan
+  unset($_SESSION['HabilitarPelicula']);
+  unset($_SESSION['InhabilitarPelicula']);
+  unset($_SESSION['HabilitarProximaPelicula']);
+  unset($_SESSION['InhabilitarProximaPelicula']);
+
+
+  //En caso que se quiera habilitar la Pelicula seleccionada
+  if (!empty($idPelicula)){
+
+    //Sentencia para traer el nombre de la Pelicula y mostrarlo por mensaje
+    $NombrePeliculaSql="SELECT titulo FROM peliculas WHERE idPelicula='$idPelicula'";
+    $NombrePelicula = mysqli_fetch_assoc(mysqli_query($db, $NombrePeliculaSql));
+
+  //En caso que se quiera habilitar la ProximaPelicula seleccionada
+  }elseif (!empty($IdProximasPelicula)){
+
+    //Sentencia para traer el nombre de la Pelicula y mostrarlo por mensaje
+    $NombreProximaPeliculaSql="SELECT titulo FROM proximaspeliculas WHERE idPelicula='$IdProximasPelicula'";
+    $NombreProximaPelicula = mysqli_fetch_assoc(mysqli_query($db, $NombreProximaPeliculaSql));
+
+  }
+  
   //En caso que se quiera habilitar la Pelicula seleccionada
   if (!empty($habilitada) && (!empty($idPelicula))) {
 
     $sql = "UPDATE peliculas SET habilitada='$habilitada' WHERE idPelicula='$idPelicula'";
 
-      //En caso que no se quiera habilitar la Pelicula seleccionada
+    //Se guarda la variable en la SESSION para poder ser mostrado
+    $_SESSION['HabilitarPelicula']= "<b> <i> <div class='alerta alerta-error'>La Pelicula '<u>".$NombrePelicula['titulo']."</u>' Fue Habilitada.</div> </i> </b> </br>";
+   
+
+  //En caso que no se quiera habilitar la Pelicula seleccionada
   } elseif (!empty($noHabilitada) && (!empty($idPelicula))) {
 
     $sql = "UPDATE peliculas SET habilitada='$noHabilitada' WHERE idPelicula='$idPelicula'";
+
+    //Se guarda la variable en la SESSION para poder ser mostrado
+    $_SESSION['HabilitarPelicula']= "<b> <i> <div class='alerta alerta-error'>La Pelicula '<u>".$NombrePelicula['titulo']."</u>' Fue Inhabilitada.</div> </i> </b> </br>";
 
   //En caso que se quiera habilitar la ProximaPelicula seleccionada
   } elseif (!empty($habilitada) && (!empty($IdProximasPelicula))) {
 
     $sql = "UPDATE proximaspeliculas SET habilitada='$habilitada' WHERE idPelicula='$IdProximasPelicula'";
 
-      //En caso que no se quiera habilitar la ProximaPelicula seleccionada
+    //Se guarda la variable en la SESSION para poder ser mostrado
+    $_SESSION['HabilitarProximaPelicula']= "<b> <i> <div class='alerta alerta-error'>La Proxima Pelicula '<u>".$NombreProximaPelicula['titulo']."</u>' Fue Habilitada.</div> </i> </b> </br>";
+
+    //En caso que no se quiera habilitar la ProximaPelicula seleccionada
   } elseif (!empty($noHabilitada) && (!empty($IdProximasPelicula))) {
 
     $sql = "UPDATE proximaspeliculas SET habilitada='$noHabilitada' WHERE idPelicula='$IdProximasPelicula'";
+
+    $_SESSION['HabilitarProximaPelicula']= "<b> <i> <div class='alerta alerta-error'>La Proxima Pelicula '<u>".$NombreProximaPelicula['titulo']."</u>' Fue Inhabilitada.</div> </i> </b> </br>";
+
   }
 
   //Ejecutar la sentencia anterior
   mysqli_query($db, $sql);
+
+  header("Location:InformePeliculas.php");
 
 }
 
@@ -267,18 +305,33 @@ function AccionPelicula($db, $habilitada = null, $noHabilitada = null, $idPelicu
 //Funcion para Habiltiar o No Habilitar Usuarios para que pueda ingresar a la Pagina Web
 function AccionUsuario($db, $habilitada = null, $noHabilitada = null, $idUsuario = null){
 
+  //Borrado de Variables de SESSION, para que no se superpongan
+  unset($_SESSION['HabilitarUsuario']);
+  unset($_SESSION['InhabilitarUsuario']);
+
+  //Sentencia para traer el nombre de usuario y mostrarlo por mensaje
+  $NombreUsuarioSql="SELECT usuario FROM usuarios WHERE idUsuario='$idUsuario'";
+  $NombreUsuario = mysqli_fetch_assoc(mysqli_query($db, $NombreUsuarioSql));
+
   //En caso que se quiera Habilitar el Usuario
   if (!empty($habilitada)) {
 
     //Sentencia para actualizar la tabla de Usuarios
     $sql = "UPDATE usuarios SET habilitado='$habilitada' WHERE idUsuario='$idUsuario'";
 
-      //En caso que no se quiera Habilitar el Usuario
+    //Se guarda la variable en la SESSION para poder ser mostrado
+    $_SESSION['HabilitarUsuario']= "<b> <i> <div class='alerta alerta-error'>El Usuario '<u>".$NombreUsuario['usuario']."</u>' Fue Habilitado.</div> </i> </b> </br>";
+    
+    //En caso que no se quiera Habilitar el Usuario
   } elseif (!empty($noHabilitada)) {
 
     //Sentencia para actualizar la tabla de Usuarios
     $sql = "UPDATE usuarios SET habilitado='$noHabilitada' WHERE idUsuario='$idUsuario'";
 
+  //Se guarda la variable en la SESSION para poder ser mostrado
+   $_SESSION['InhabilitarUsuario']="<b> <i> <div class='alerta alerta-error'>El Usuario '<u>".$NombreUsuario['usuario']."'</u> Fue Inhabilitado.</div> </i> </b> </br>";
+   
+  
   }
 
   //Ejecutar la sentencia anterior
@@ -286,6 +339,8 @@ function AccionUsuario($db, $habilitada = null, $noHabilitada = null, $idUsuario
 
   //Recarga la misma pagina
   header("Location:AdministrarUsuarios.php");
+
+
 
 }
 
@@ -495,8 +550,7 @@ function ComprobacionUsuarioExiste($db,$usuario,$email){
   $ListaUsuarios = mysqli_query($db, $sql);
 
     //Inicio de variables
-    $ExisteUsuario = false;
-    $ExisteEmail = false;
+    $errores2=array();
 
     //Recorre todos los datos recolectados anteriormente, para luego consultar si ya existe el nombre de usuario y luego el mail
     foreach ($ListaUsuarios as $ListaUsuario) {
@@ -505,13 +559,13 @@ function ComprobacionUsuarioExiste($db,$usuario,$email){
       $email2 = $ListaUsuario['email'];
 
       if ($usuario == $usuario2) {
-        $ExisteUsuario = true;
+        $errores2['ExisteUsuario']="Ya existe un Usuario con este Nombre";
       } elseif ($email == $email2) {
-        $ExisteEmail = true;
+        $errores2['ExisteEmail']="Ya existe un Usuario con este Email";
       }
     }
 
-    return [$ExisteEmail, $ExisteUsuario];
+    return $errores2;
 
   }
 
@@ -591,26 +645,24 @@ $contrasenia_cifrada=password_hash($contrasenia, PASSWORD_BCRYPT,['cost'=>4]);
   
   //*********************************            Registrar Reserva de Boleto           ****************************************** */
 
-    //Funcion para Registrar un Usuario en la Base de Datos
-    function RegistrarBoleto($db,$IdPelicula,$IdUsuario,$fechaPelicula,$horaPelicula,$CantidadBoleto,$PrecioFinal){
+  //Funcion para Registrar un Usuario en la Base de Datos
+  function RegistrarBoleto($db,$IdPelicula,$IdUsuario,$fechaPelicula,$horaPelicula,$CantidadBoleto,$PrecioFinal){
 
-      //Sentencia para realizar el registro
-      $sql = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada,fechaReserva) 
-      VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No',CURDATE())";
+    //Sentencia para realizar el registro
+    $sql = "INSERT INTO proyecciones (IdPelicula, IdUsuario, fechaPelicula,horaPelicula,CantBoleto,precioFinal,Anulada,fechaReserva) 
+    VALUES ('$IdPelicula','$IdUsuario','$fechaPelicula','$horaPelicula','$CantidadBoleto','$PrecioFinal','No',CURDATE())";
           
-      //Ejecucion de la sentencia anterior
-      mysqli_query($db,$sql);
+    //Ejecucion de la sentencia anterior
+    mysqli_query($db,$sql);
 
+    $Direccion =$_SESSION['url']."/Usuario/Cartelera.php"; //ESTA ES LA ALERTA
 
-$Direccion =$_SESSION['url']."/Usuario/Cartelera.php"; //ESTA ES LA ALERTA
-
-      //Envio a la pagina de la Cartelera
-echo "<script>";
-echo "alert('Felicitaciones por reservar, Que disfrute la Pelicula');";
-echo "window.location.href = '$Direccion'";
-echo "</script>";
-
-    }
+    //Envio a la pagina de la Cartelera
+    echo "<script>";
+    echo "alert('Felicitaciones por reservar, Que disfrute la Pelicula');";
+    echo "window.location.href = '$Direccion'";
+    echo "</script>";
+  }
 
 
 
@@ -620,7 +672,8 @@ echo "</script>";
 function MostrarErrores($errores,$campo){
   $alerta='';
   if (isset($errores[$campo]) && !empty($campo)){
-    $alerta= "<div class='alerta alerta-error'>".$errores[$campo].'</div>';
+    
+    $alerta= "<b> <i> <div class='alerta alerta-error'>".$errores[$campo].'</div> </i> </b> <br/>';
   }
   return $alerta;
 }
