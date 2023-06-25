@@ -12,28 +12,34 @@ $Total=0;
 //Condicional: si se selecciono una fecha, se cancelo la fecha o se imprime el correspondiente informe (teniendo en cuenta el rango de fecha)
 if (isset($_POST['SeleccionarFecha'])) {
 
+    //Caso en el cual se selecciona un rango de fecha para filtrar
     if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
 
         $txtFechaInicio = date("Y-m-d", strtotime($_POST['txtFechaInicio']));
         $txtFechaFin = date("Y-m-d", strtotime($_POST['txtFechaFin']));
 
+    //Caso en el cual no se selecciona un rango de fecha para filtrar
     } else {
         $txtFechaInicio = "";
         $txtFechaFin = "";
     }
 
+    //Se asigna los valores de fecha a las variables de SESSION
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
 
+    //Caso en el cual se cancela el rango de fecha para filtrar
 } elseif (isset($_POST['CancelarFecha'])) {
     $txtFechaInicio = "";
     $txtFechaFin = "";
 
+        //Se asigna los valores de fecha a las variables de SESSION
     $_SESSION['txtFechaInicio'] = $txtFechaInicio;
     $_SESSION['txtFechaFin'] = $txtFechaFin;
 
 }
 
+//Caso en el cual los rangos de fecha para filtrar ya existen. (No son nulos)
 if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
 
     if(($txtFechaInicio!=$_SESSION['txtFechaInicio']) || ($txtFechaFin!=$_SESSION['txtFechaFin'])){
@@ -45,6 +51,7 @@ if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
     }
 }
 
+    //Caso en el cual ya esta seleccionada la lista de Informe de Ventas
 if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == "Venta")) {
 
     $_SESSION['TipoListaInforme'] = "Venta";
@@ -54,6 +61,7 @@ if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == 
         $listaVentas = ListaVentas($db);
     }
 
+    //Caso en el cual ya esta seleccionada la lista de Informe de Recaudacion
 } elseif (($_SESSION['TipoListaInforme'] == "Recaudacion")) {
 
     $_SESSION['TipoListaInforme'] = "Recaudacion";
@@ -63,6 +71,7 @@ if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == 
         $listaRecaudacion = ListaRecaudacion($db);
     }
 
+    //Caso en el cual ya esta seleccionada la lista de Informe de Boletos
 } elseif ($_SESSION['TipoListaInforme'] == "Boleto") {
 
     $_SESSION['TipoListaInforme'] = "Boleto";
@@ -75,27 +84,33 @@ if ((empty($_SESSION['TipoListaInforme'])) || ($_SESSION['TipoListaInforme'] == 
 }
 
 
+//Caso en el cual se selecciona la lista de Informe de Ventas
 if (isset($_POST['ListaVenta'])) {
 
     $_SESSION['TipoListaInforme'] = "Venta";
+    //Verificacion si existe rango de fecha para filtrado
     if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
         $listaVentas = ListaVentas($db,$txtFechaInicio,$txtFechaFin);
     }else{
         $listaVentas = ListaVentas($db);
     }
 
+//Caso en el cual se selecciona la lista de Informe de Recaudacion
 } elseif (isset($_POST['ListaRecaudacion'])) {
 
     $_SESSION['TipoListaInforme'] = "Recaudacion";
+    //Verificacion si existe rango de fecha para filtrado
     if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
         $listaRecaudacion = ListaRecaudacion($db,$txtFechaInicio,$txtFechaFin);
     }else{
         $listaRecaudacion = ListaRecaudacion($db);
     }
 
+//Caso en el cual se selecciona la lista de Informe de Boletos
 } elseif (isset($_POST['ListaBoletos'])) {
 
     $_SESSION['TipoListaInforme'] = "Boleto";
+    //Verificacion si existe rango de fecha para filtrado
     if (($txtFechaInicio!="") && ($txtFechaFin!="")) {
         $listaBoleto = ListaBoletos($db,$txtFechaInicio,$txtFechaFin);
     }else{

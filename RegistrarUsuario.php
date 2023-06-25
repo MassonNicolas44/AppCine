@@ -112,7 +112,7 @@ if (isset($_POST['registrar'])) {
 
               <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'telefono') : '' ;?>
 
-              Email: <input class="form-control" value="<?php echo $email ?>" type="text" name="email" id="">
+              Email: <input class="form-control" value="<?php echo $email ?>" type="email" name="email" id="">
 
               <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'email') : '' ;?>
 

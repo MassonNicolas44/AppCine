@@ -150,8 +150,9 @@ function ListaPeliculas($db, $Valor = null, $txtID = null, $Titulo = null)
 
   //En caso que la sentencia a ejecutarse sea traer solo el Titulo
   if ($Valor == "Titulo") {
+
+    $erroresPelicula=array();
     $txtTitulo2 = "";
-    $ExistePelicula = false;
 
     //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
     foreach ($resultado as $NuevoTitulo) {
@@ -159,12 +160,12 @@ function ListaPeliculas($db, $Valor = null, $txtID = null, $Titulo = null)
 
       //Comparacion entre el Titulo a ingresar y cada titulo que existe en la Base de Datos
       if ($Titulo == $txtTitulo2) {
-        $ExistePelicula = true;
+        $erroresPelicula['ExistePelicula']="Ya existe el mismo Titulo";
       }
     }
 
     //Devolucion de si ya existe la pelicula en la Base de Datos
-    return $ExistePelicula;
+    return $erroresPelicula;
 
   } else {
 
@@ -204,8 +205,10 @@ function ListaProximasPeliculas($db, $Valor = null, $txtID = null, $Titulo = nul
 
   //En caso que la sentencia a ejecutarse sea traer solo el Titulo
   if ($Valor == "Titulo") {
+
+    //Inicio de Variables
+    $erroresProximaPelicula=array();
     $txtTitulo2 = "";
-    $ExistePelicula = false;
 
     //Comprobacion de que la pelicula que se quiere ingresar, no este ya cargada en la Base de Datos
     foreach ($resultado as $NuevoTitulo) {
@@ -213,12 +216,12 @@ function ListaProximasPeliculas($db, $Valor = null, $txtID = null, $Titulo = nul
 
       //Comparacion entre el Titulo a ingresar y cada titulo que existe en la Base de Datos
       if ($Titulo == $txtTitulo2) {
-        $ExistePelicula = true;
+        $erroresProximaPelicula['ExisteProximaPelicula']="Ya existe el mismo Titulo";
       }
     }
 
     //Devolucion de si ya existe la pelicula en la Base de Datos
-    return $ExistePelicula;
+    return $erroresProximaPelicula;
 
   } else {
 
@@ -484,11 +487,9 @@ function ListaBoletos($db, $FechaInicio = null, $FechaFin = null){
 //Funcion para comprobar si existen los datos ingresados dentro de la Base de Datos
 function ComprobacionLogin($usuario, $contrasenia, $db){
 
-
   $ExisteContrasenia=false;
 
   $errores2=array();
-
 
   //Sentencia para seleccionar todos los datos de la tabla Usuarios de la base de datos para verificar que el usuario esta habilitado
   $sql = "SELECT * FROM usuarios 
@@ -499,7 +500,6 @@ function ComprobacionLogin($usuario, $contrasenia, $db){
   $login = mysqli_query($db, $sql);
 
   $DatosUsuario = mysqli_fetch_assoc($login);
-
 
   if (!empty($DatosUsuario)){
   

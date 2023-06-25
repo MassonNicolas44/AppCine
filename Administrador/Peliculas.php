@@ -5,6 +5,8 @@ require_once "../Include/Conexion.php";
 require_once "../Include/Funciones.php";
 require_once "../Include/Cabecera.php";
 
+$errores=array();
+
 //Declaracion de variables para luego ser utilizadas en distintos procesos
 
 $txtID = (isset($_POST['txtID'])) ? $_POST['txtID'] : "";
@@ -28,18 +30,32 @@ switch ($accion) {
         //En caso de agregar una pelicula y esta tildada para agregar a cartelera, se agregara como se indica. En caso contrario, se agrega en 'proximaspeliculas'
         if (isset($_POST["cartelera"])) {
 
+//********************      Insertar Proxima Pelicula     ************************* */
+
             //Comprobacion de que los campos no estan vacios
-            if (
-                !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-                !empty($txtFecha)
-            ) {
+            if (empty(trim($txtTitulo))){ 
+                $errores['titulo']="Titulo vacio";
+            }
+
+            if (empty(trim($txtDuracion))){ 
+                $errores['duracion']="Duracion vacio";
+            }
+
+            if (empty(trim($txtCategoria))){ 
+                $errores['categoria']="Categoria vacio";
+            }
+
+            if (empty(trim($txtFecha))){ 
+                $errores['fecha']="Fecha vacio";
+            }
+
+            if (count($errores)==0){
+
                  //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
                 $ExistePelicula = ListaProximasPeliculas($db, "Titulo", null, $txtTitulo);
+                $erroresProximaPelicula=ListaProximasPeliculas($db, "Titulo", null, $txtTitulo);
 
-                if ($ExistePelicula == true) {
-                    echo "<script> alert('Pelicula existe'); </script>";
-                } else {
-
+                if (count($erroresProximaPelicula)==0){
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
                         $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
@@ -53,23 +69,46 @@ switch ($accion) {
                     InsertarNuevaPelicula($db,"ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo,null,null, $nombreArchivo, $txtFecha);
 
                     header("Location:Peliculas.php");
-                }
-            } else {
-                echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
-            }
-        } else {
-            //Comprobacion de que los campos no estan vacios
-            if (
-                !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-                !empty($txtPrecio) && !empty($txtDescripcion)
-            ) {
 
+                }else{
+                    $_SESSION['errores']=$erroresProximaPelicula;
+                 }
+
+            }else{
+                $_SESSION['errores']=$errores;
+            }
+
+        } else {
+
+
+            //********************      Insertar Pelicula     ************************* */
+            //Comprobacion de que los campos no estan vacios
+            if (empty(trim($txtTitulo))){ 
+                $errores['titulo']="Titulo vacio";
+            }
+
+            if (empty(trim($txtDuracion))){ 
+                $errores['duracion']="Duracion vacio";
+            }
+
+            if (empty(trim($txtCategoria))){ 
+                $errores['categoria']="Categoria vacio";
+            }
+
+            if (empty(trim($txtPrecio))){ 
+                $errores['precio']="Precio vacio";
+            }
+
+            if (empty(trim($txtDescripcion))){ 
+                $errores['descripcion']="Descripcion vacio";
+            }
+
+            if (count($errores)==0){
                 //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
                 $ExistePelicula = ListaPeliculas($db, "Titulo", null, $txtTitulo);
+                $erroresPelicula=ListaPeliculas($db, "Titulo", null, $txtTitulo);
 
-                if ($ExistePelicula == true) {
-                    echo "<script> alert('Pelicula existe'); </script>";
-                } else {
+                if (count($erroresPelicula)==0){
 
                     if ($txtImagen != "") {
                         $nombreArchivo = $_FILES["txtImagen"]["name"];
@@ -84,21 +123,40 @@ switch ($accion) {
                     InsertarNuevaPelicula($db,"Peliculas",$txtTitulo,$txtDuracion,$txtrestriccionEdad,$txtCategoria,$txtTipo,$txtPrecio,$txtDescripcion,$nombreArchivo);
 
                     header("Location:Peliculas.php");
+                }else{
+                    $_SESSION['errores']=$erroresPelicula;
                 }
-            } else {
-                echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+            }else{
+                $_SESSION['errores']=$errores;
             }
         }
-
         break;
 
     case "ModificarSeleccionar":
 
-        //Comprobacion de que los campos no estan vacios
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtPrecio) && !empty($txtDescripcion)
-        ) {
+//********************      Modificar Pelicula     ************************* */
+
+        if (empty(trim($txtTitulo))){ 
+            $errores['titulo']="Titulo vacio";
+        }
+
+        if (empty(trim($txtDuracion))){ 
+            $errores['duracion']="Duracion vacio";
+        }
+
+        if (empty(trim($txtCategoria))){ 
+            $errores['categoria']="Categoria vacio";
+        }
+
+        if (empty(trim($txtPrecio))){ 
+            $errores['precio']="Precio vacio";
+        }
+
+        if (empty(trim($txtDescripcion))){ 
+            $errores['descripcion']="Descripcion vacio";
+        }
+
+        if (count($errores)==0){
 
             //En caso de no modificar la imagen, no se modifica
             if ($txtImagen !== "") {
@@ -115,44 +173,60 @@ switch ($accion) {
                 $txtPrecio, $txtDescripcion, null,null,$txtID);
             }
 
-
             header("Location:Peliculas.php");
-        } else {
+        }else{
             $validarModificar = "Seleccionar";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+            $_SESSION['errores']=$errores;
         }
-
-        break;
+        
+     break;
 
 
     case "ModificarSeleccionarProximaPelicula":
+
+//********************      Modificar Proxima Pelicula     ************************* */
+
         //Comprobacion de que los campos no estan vacios
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtFecha)
-        ) {
-
-
-        //En caso de no modificar la imagen, no se modifica
-        if ($txtImagen !== "") {
-            $nombreArchivo = $_FILES["txtImagen"]["name"];
-            $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-            move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
-
-            //Sentencia para actualizar registros con respecto a la tabla peliculas
-            ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
-            null, null, $nombreArchivo,$txtFecha,$txtID);
-        }else{
-            //Sentencia para actualizar registros con respecto a la tabla peliculas
-            ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
-            null, null, null,$txtFecha,$txtID);
+        if (empty(trim($txtTitulo))){ 
+            $errores['titulo']="Titulo vacio";
         }
+
+        if (empty(trim($txtDuracion))){ 
+            $errores['duracion']="Duracion vacio";
+        }
+
+        if (empty(trim($txtCategoria))){ 
+            $errores['categoria']="Categoria vacio";
+        }
+
+        if (empty(trim($txtFecha))){ 
+            $errores['fecha']="Fecha vacio";
+        }
+
+        if (count($errores)==0){
+
+            //En caso de no modificar la imagen, no se modifica
+            if ($txtImagen !== "") {
+                $nombreArchivo = $_FILES["txtImagen"]["name"];
+                $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
+                move_uploaded_file($tmpImagen, "../../GamesOfMovies/img/" . $nombreArchivo);
+
+                //Sentencia para actualizar registros con respecto a la tabla peliculas
+                ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+                null, null, $nombreArchivo,$txtFecha,$txtID);
+            }else{
+                //Sentencia para actualizar registros con respecto a la tabla peliculas
+                ModificarPelicula($db, $Valor = "ProximasPeliculas", $txtTitulo, $txtDuracion, $txtrestriccionEdad, $txtCategoria, $txtTipo, 
+                null, null, null,$txtFecha,$txtID);
+            }
 
             header("Location:Peliculas.php");
-        } else {
+            
+        }else{
             $validarModificar = "SeleccionarProximaPelicula";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo y/o Fecha Estreno'); </script>";
+            $_SESSION['errores']=$errores;
         }
+
         break;
 
     case "Cancelar":
@@ -197,18 +271,34 @@ switch ($accion) {
         break;
 
     case "Pasar a Cartelera":
-        if (
-            !empty($txtTitulo) && !empty($txtDuracion) && !empty($txtrestriccionEdad) && !empty($txtCategoria) && !empty($txtTipo) &&
-            !empty($txtPrecio) && !empty($txtDescripcion)
-        ) {
 
-            
-               //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
-               $ExistePelicula = ListaPeliculas($db, "Titulo", null, $txtTitulo);
+        //Comprobacion de que los campos no estan vacios
+        if (empty(trim($txtTitulo))){ 
+            $errores['titulo']="Titulo vacio";
+        }
 
-               if ($ExistePelicula == true) {
-                   echo "<script> alert('Pelicula existe'); </script>";
-               } else {
+        if (empty(trim($txtDuracion))){ 
+            $errores['duracion']="Duracion vacio";
+        }
+
+        if (empty(trim($txtCategoria))){ 
+            $errores['categoria']="Categoria vacio";
+        }
+
+        if (empty(trim($txtPrecio))){ 
+            $errores['precio']="Precio vacio";
+        }
+
+        if (empty(trim($txtDescripcion))){ 
+            $errores['descripcion']="Descripcion vacio";
+        }
+
+        if (count($errores)==0){
+            //Validar si ya existe el Titulo de la ProximaPelicula que se quiere Ingresar
+            $ExistePelicula = ListaPeliculas($db, "Titulo", null, $txtTitulo);
+            $erroresPelicula=ListaPeliculas($db, "Titulo", null, $txtTitulo);
+
+            if (count($erroresPelicula)==0){
 
                    if ($txtImagen != "") {
                        $nombreArchivo = $_FILES["txtImagen"]["name"];
@@ -225,13 +315,15 @@ switch ($accion) {
                    //Eliminar la pelicula que estaba en ProximasPeliculas
                    EliminarProximaPelicula($db,$txtID);
 
-                header("Location:Peliculas.php");
-               }
-
-        } else {
+                    header("Location:Peliculas.php");
+            }else{
+                $_SESSION['errores']=$erroresPelicula;
+            }
+        }else{
             $validarModificar = "SeleccionarProximaPelicula";
-            echo "<script> alert('Complete Titulo-Duracion-Restriccion-Categoria-Tipo-Precio y/o Descripcion'); </script>";
+            $_SESSION['errores']=$errores;
         }
+
         break;
 
     case "Borrar":
@@ -267,20 +359,38 @@ switch ($accion) {
             </div>
             <div class="card-body">
                 <form method="POST" enctype="multipart/form-data">
+
+                <?php // **************            Id Oculto            **************     ?>
+
                     <div class="form-group">
                         <input type="hidden" class="form-control" value="<?php echo $txtID ?>" name="txtID"
                             placeholder="Ingresar ID">
                     </div>
+
+                    <?php // **************            Titulo             **************     ?>
+
                     <div class="form-group">
                         <input type="text" class="form-control" value="<?php echo $txtTitulo ?>" name="txtTitulo"
                             placeholder="Ingresar nombre">
+
+                            <?php // **************            Mensaje de Error Titulo             **************     ?>
+                            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'titulo') : '' ;?>
+
                     </div>
+
+                    <?php // **************            Duracion             **************     ?>
+
                     <div class="form-group">
                         <label>Duracion:</label>
                         <input type="number" class="form-control" value="<?php echo $txtDuracion ?>" name="txtDuracion"
                             placeholder="Ingresar duracion [Minutos]">
+
+                            <?php // **************            Mensaje de Error Duracion             **************     ?>
+                            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'duracion') : '' ;?>
+
                     </div>
 
+                    <?php // **************            Restriccion Edad             **************     ?>
                     <div class="form-group">
                         <label>Restriccion Edad:</label>
                         <select name="txtrestriccionEdad">
@@ -291,7 +401,7 @@ switch ($accion) {
                                 $listaRestriccionEdad = ListaPeliculas($db, "RestriccionEdad");
 
                                 while ($restriccionEdad =mysqli_fetch_assoc($listaRestriccionEdad)):
-
+                                        //Carga las opciones con los valores cargados en la Base de Datos
                                         ?>
                                     <option value="<?=$restriccionEdad['restriccionEdad']?>" <?= ($restriccionEdad['restriccionEdad'] == $txtrestriccionEdad) ? 'selected="selected"' : '' ?>> 
                                         <?=$restriccionEdad['restriccionEdad']?>
@@ -300,50 +410,66 @@ switch ($accion) {
                             endwhile;
                             ?>                     
                         </select>                       
-
-                        
                     </div>
+
+                    <?php // **************            Categoria             **************     ?>
+
                     <div class="form-group">
                         <label>Categoria:</label>
                         <input type="text" class="form-control" value="<?php echo $txtCategoria ?>" name="txtCategoria"
                             placeholder="Ingresar categoria">
+
+                            <?php // **************            Mensaje de Error Categoria             **************     ?>
+                            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'categoria') : '' ;?>
+
                     </div>
+
+                    <?php // **************            Tipo             **************     ?>
                     <div class="form-group">
                         <label>Tipo:</label>
                         <select name="txtTipo">
 
                             <?php 
 
-
                             //Trae la lista de Tipo que esta guardada en la base de dato para asignarse al Select
                             $listaTipo = ListaPeliculas($db, "Tipo");
 
                             while ($Tipo =mysqli_fetch_assoc($listaTipo)):
+                                //Carga las opciones con los valores cargados en la Base de Datos
                                 ?>
                                 <option value="<?=$Tipo['tipo']?>" <?=($Tipo['tipo'] == $txtTipo) ? 'selected="selected"' : '' ?>>
                                         <?=$Tipo['tipo']?>
                                     </option>
                                 <?php                     
                        endwhile;
-?>
-    
+                        ?>
                         </select>
-
                     </div>
+
+                    <?php // **************            Precio             **************     ?>
+
                     <div class="form-group">
                         <label>Precio:</label>
                         <input type="number" class="form-control" value="<?php echo $txtPrecio ?>" name="txtPrecio"
                             placeholder="Ingresar Precio">
+
+                            <?php // **************            Mensaje de Error Precio             **************     ?>
+                            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'precio') : '' ;?>
+
                     </div>
 
+                    <?php // **************            Descripcion             **************     ?>
                     <div class="form-group">
                         <label>Descripcion:</label>
                         <textarea input name="txtDescripcion" placeholder="Ingresar descripcion" cols="34" rows="5"><?php if (!empty($txtDescripcion)){
                             echo $SeleccionPelicula['descripcion'];}?></textarea>
 
+                        <?php // **************            Mensaje de Error Descripcion             **************     ?>
+                        <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'descripcion') : '' ;?>
 
                     </div>
 
+                    <?php // **************            Imagen             **************     ?>
                     <div class="form-group">
                         <label for="txtNombre">Imagen:</label>
                         <br />
@@ -354,12 +480,21 @@ switch ($accion) {
                         <?php } ?>
                         <input type="File" class="form-control" value="<?php echo $txtImagen ?>" name="txtImagen"
                             placeholder="Ingresar imagen">
+
+
+                        <?php // **************            Fecha             **************     ?>
                         <div class="form-group">
                             <label>Fecha de estreno:</label>
 
                             <input type="date" class="form-control" value="<?php echo $txtFecha ?>" name="txtFecha">
+
+                            <?php // **************            Mensaje de Error Fecha             **************     ?>
+                            <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'fecha') : '' ;?>
+
                         </div>
                     </div>
+
+                    <?php // **************            Ingresar Proxima Pelicula             **************     ?>
                     <div class="checkbox">
                         <label><input type="checkbox" name="cartelera" value="si"> Ingresar a Proximas Peliculas</label>
                     </div>
@@ -528,7 +663,7 @@ switch ($accion) {
             </tbody>
         </table>
     </div>
-
+</body>
 
     <script>
     //Mensaje de Confirmacion al querar Anular Pelicula y/o Proxima Pelicula
@@ -541,11 +676,8 @@ switch ($accion) {
             return false;
         }
     }
+</script> 
 
-
-    <!-- Pie de la Pagina -->
-</div>
-</div>
-</body>
+<?php BorrarErrores(); ?>
 
 </html>

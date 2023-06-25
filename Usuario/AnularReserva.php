@@ -4,8 +4,6 @@ require_once "../Include/Conexion.php";
 require_once "../Include/Funciones.php";
 require_once "../Include/Cabecera.php";
 
-
-
 //Variables a utilizar
 $NombreUsuario = $_SESSION['Usuario'];
 $IdVenta = (isset($_POST['idVenta'])) ? $_POST['idVenta'] : "";

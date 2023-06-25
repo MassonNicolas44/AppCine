@@ -85,8 +85,29 @@ if (isset($_POST['HabilitarUsuario'])) {
                             <td>
                                 <form method="post">
                                     <input type="hidden" name="idUsuario" IdUsuario="idUsuario" value="<?php echo $Usuarios['IdUsuario']; ?>">
-                                    <input type="submit" name="HabilitarUsuario" value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+
+                                    <?php  
+
+                                    //Al estar habilitado el Usuario, se anula el boton de Habilitar, caso contrario ocurre la misma logica
+
+                                    if ($Usuarios['habilitado']=="Si"){
+
+                                        ?>
+                                    <input type="submit" name="HabilitarUsuario" disabled value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
                                     <input type="submit" name="InhabilitarUsuario" value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                        <?php
+
+                                    }else{
+
+                                        ?>
+                                    <input type="submit" name="HabilitarUsuario" value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                    <input type="submit" name="InhabilitarUsuario" disabled  value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                        <?php
+
+                                    }
+  
+                                    ?>
+
                                 </form>
                             </td>
                         </tr>

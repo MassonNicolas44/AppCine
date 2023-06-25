@@ -116,7 +116,7 @@ if (isset($_POST['modificar'])) {
 
               <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'telefono') : '' ;?>
 
-              Email: <input class="form-control" value="<?php echo $_SESSION['EmailUsuario'] ?>" type="text" name="email" id="">
+              Email: <input class="form-control" value="<?php echo $_SESSION['EmailUsuario'] ?>" type="email" name="email" id="">
 
               <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'email') : '' ;?>
 

@@ -165,12 +165,30 @@ if (isset($_POST['HabilitarPelicula'])) {
                                 </td>
                                 <td>
                                     <form method="post">
-                                        <input type="hidden" name="idPelicula" IdUsuario="idPelicula"
-                                            value="<?php echo $pelicula['IdPelicula']; ?>">
-                                        <input type="submit" name="HabilitarPelicula" value="Habilitar" class="btn btn-primary"
-                                            onclick="return confirmacionHabilitar()">
-                                        <input type="submit" name="InhabilitarPelicula" value="Inhabilitar"
-                                            class="btn btn-danger" onclick="return confirmacionInhabilitar()">
+                                        <input type="hidden" name="idPelicula" IdUsuario="idPelicula" value="<?php echo $pelicula['IdPelicula']; ?>">
+
+                                        <?php  
+
+                                        //Al estar habilitado la Pelicula, se anula el boton de Habilitar, caso contrario ocurre la misma logica
+
+                                        if ($pelicula['habilitada']=="Si"){
+
+                                            ?>
+                                        <input type="submit" name="HabilitarPelicula" disabled value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                        <input type="submit" name="InhabilitarPelicula" value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                            <?php
+
+                                        }else{
+
+                                            ?>
+                                        <input type="submit" name="HabilitarPelicula" value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                        <input type="submit" name="InhabilitarPelicula" disabled  value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                            <?php
+
+                                        }
+
+                                        ?>
+
                                     </form>
                             </tr>
                         <?php }
@@ -241,12 +259,30 @@ if (isset($_POST['HabilitarPelicula'])) {
                             </td>
                             <td>
                                 <form method="post">
-                                    <input type="hidden" name="idProximasPelicula" IdUsuario="idProximasPelicula"
-                                        value="<?php echo $proximaPeliculas['IdPelicula']; ?>">
-                                    <input type="submit" name="HabilitarProximasPeliculas" value="Habilitar"
-                                        class="btn btn-primary" onclick="return confirmacionHabilitar()">
-                                    <input type="submit" name="InhabilitarProximasPeliculas" value="Inhabilitar"
-                                        class="btn btn-danger" onclick="return confirmacionInhabilitar()">
+                                    <input type="hidden" name="idProximasPelicula" IdUsuario="idProximasPelicula" value="<?php echo $proximaPeliculas['IdPelicula']; ?>">
+
+                                    <?php  
+
+                                    //Al estar habilitado la Pelicula, se anula el boton de Habilitar, caso contrario ocurre la misma logica
+
+                                    if ($proximaPeliculas['habilitada']=="Si"){
+
+                                        ?>
+                                    <input type="submit" name="HabilitarProximasPeliculas" disabled value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                    <input type="submit" name="InhabilitarProximasPeliculas" value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                        <?php
+
+                                    }else{
+
+                                        ?>
+                                    <input type="submit" name="HabilitarProximasPeliculas" value="Habilitar" class="btn btn-primary"  onclick="return confirmacionHabilitar()">
+                                    <input type="submit" name="InhabilitarProximasPeliculas" disabled  value="Inhabilitar" class="btn btn-danger"  onclick="return confirmacionInhabilitar()">
+                                        <?php
+
+                                    }
+
+                                    ?>
+
                                 </form>
                         </tr>
                     <?php }
