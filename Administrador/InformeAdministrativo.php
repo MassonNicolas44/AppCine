@@ -6,6 +6,8 @@ require_once "../Include/Funciones.php";
 //Variables a Utilizar
 $txtFechaInicio = (isset($_POST['txtFechaInicio'])) ? $_POST['txtFechaInicio'] : "";
 $txtFechaFin = (isset($_POST['txtFechaFin'])) ? $_POST['txtFechaFin'] : "";
+$txtBuscarUsuario = (isset($_POST['txtBuscarUsuario'])) ? $_POST['txtBuscarUsuario'] : "";
+$txtBuscarPelicula = (isset($_POST['txtBuscarPelicula'])) ? $_POST['txtBuscarPelicula'] : "";
 $Total=0;
 
 
@@ -117,9 +119,21 @@ if (isset($_POST['ListaVenta'])) {
         $listaBoleto = ListaBoletos($db);
     }
 
+    //Caso en el cual se selecciona la lista de Informe de Ventas
+}elseif (isset($_POST['Buscar'])) {
+
+    $_SESSION['TipoListaInforme'] = "Venta";
+
+    if (!empty(trim($txtBuscarUsuario))){
+        $listaVentas = BusquedaListaVentas($db,$txtBuscarUsuario,"Usuario");
+    }elseif (!empty(trim($txtBuscarPelicula))){
+        $listaVentas = BusquedaListaVentas($db,$txtBuscarPelicula,"Pelicula");
+    }else{
+        $listaVentas = BusquedaListaVentas($db);
+    }
+
+
 }
-
-
 
 ?>
 
@@ -241,6 +255,25 @@ if (isset($_POST['ListaVenta'])) {
             ?>
             <div class="card-header"><em>Ventas</em></div>
             <div class="card-body">
+
+            <form action="InformeAdministrativo.php" method="post">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <input  type="text" class="form-control" value="<?php echo $txtBuscarUsuario ?>" placeholder="Filtrar por Usuario" name="txtBuscarUsuario">
+                    </div>
+                    <div class="col-md-4">
+                        <input  type="text" class="form-control" value="<?php echo $txtBuscarPelicula ?>" placeholder="Filtrar por Titulo" name="txtBuscarPelicula">
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" name="Buscar" class="btn btn-success">Buscar</button>
+                    </div>
+
+                </div>
+        </form>
+        </br>
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>

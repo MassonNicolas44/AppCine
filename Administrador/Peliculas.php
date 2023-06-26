@@ -370,8 +370,9 @@ switch ($accion) {
                     <?php // **************            Titulo             **************     ?>
 
                     <div class="form-group">
+                    <label>Titulo:</label>
                         <input type="text" class="form-control" value="<?php echo $txtTitulo ?>" name="txtTitulo"
-                            placeholder="Ingresar nombre">
+                            placeholder="Ingresar Titulo">
 
                             <?php // **************            Mensaje de Error Titulo             **************     ?>
                             <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'titulo') : '' ;?>
@@ -383,7 +384,7 @@ switch ($accion) {
                     <div class="form-group">
                         <label>Duracion:</label>
                         <input type="number" class="form-control" value="<?php echo $txtDuracion ?>" name="txtDuracion"
-                            placeholder="Ingresar duracion [Minutos]">
+                            placeholder="Ingresar Duracion [Minutos]">
 
                             <?php // **************            Mensaje de Error Duracion             **************     ?>
                             <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'duracion') : '' ;?>
@@ -417,7 +418,7 @@ switch ($accion) {
                     <div class="form-group">
                         <label>Categoria:</label>
                         <input type="text" class="form-control" value="<?php echo $txtCategoria ?>" name="txtCategoria"
-                            placeholder="Ingresar categoria">
+                            placeholder="Ingresar Categoria">
 
                             <?php // **************            Mensaje de Error Categoria             **************     ?>
                             <?php echo isset($_SESSION['errores']) ? MostrarErrores($_SESSION['errores'],'categoria') : '' ;?>
@@ -461,7 +462,7 @@ switch ($accion) {
                     <?php // **************            Descripcion             **************     ?>
                     <div class="form-group">
                         <label>Descripcion:</label>
-                        <textarea input name="txtDescripcion" placeholder="Ingresar descripcion" cols="34" rows="5"><?php if (!empty($txtDescripcion)){
+                        <textarea input name="txtDescripcion" placeholder="Ingresar Descripcion" cols="34" rows="5"><?php if (!empty($txtDescripcion)){
                             echo $SeleccionPelicula['descripcion'];}?></textarea>
 
                         <?php // **************            Mensaje de Error Descripcion             **************     ?>

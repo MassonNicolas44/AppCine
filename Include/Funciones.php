@@ -423,6 +423,37 @@ function ListaVentas($db, $FechaInicio = null, $FechaFin = null){
 
 
 
+//*********************************            Lista de Ventas           ****************************************** */
+
+  //Funcion para seleccionar la Lista de Ventas
+  function BusquedaListaVentas($db, $Palabra=null,$TipoBusqueda=null){
+
+    //Sentencia para seleccionar los datos que van a ser mostrados en el Informe y/o para Imprimir el Informe
+  $Venta = "SELECT us.IdUsuario,us.usuario,pe.titulo,pr.fechaPelicula,pr.horaPelicula,pr.CantBoleto, pr.precioFinal, pr.Anulada
+  FROM proyecciones AS pr 
+  INNER JOIN peliculas AS pe ON pe.IdPelicula=pr.IdPelicula
+  INNER JOIN usuarios AS us ON pr.IdUsuario =us.IdUsuario
+  WHERE pr.Anulada LIKE 'No' ";
+
+  //En caso que tenga un filtrado de fecha, se agrega a la sentencia anterior
+  if ($TipoBusqueda=="Usuario") {
+    $Venta = $Venta . "AND us.usuario LIKE '%$Palabra%'";
+  }elseif ($TipoBusqueda=="Pelicula") { 
+    $Venta = $Venta . "AND pe.titulo LIKE '%$Palabra%'";
+  }
+
+  $Venta = $Venta . "  ORDER BY pr.fechaPelicula";
+
+  //Ejecucion de la Sentencia anterior
+  $BusquedaListaVentas = mysqli_query($db, $Venta);
+
+  //Se devuelve la Lista de los Ventas
+  return $BusquedaListaVentas;
+
+  }
+
+
+
 //*********************************            Lista de Recaudacion           ****************************************** */
 
 //Funcion para seleccionar la Lista de Recaudacion
